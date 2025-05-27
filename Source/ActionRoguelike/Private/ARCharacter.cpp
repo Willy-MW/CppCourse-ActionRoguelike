@@ -3,6 +3,7 @@
 
 #include "ActionRoguelike/Public/ARCharacter.h"
 
+#include "ARMagicProjectile.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
@@ -58,6 +59,16 @@ void AARCharacter::Look(const FInputActionInstance& Instance)
 	AddControllerPitchInput(-LookVector.Y);
 }
 
+void AARCharacter::PrimaryAttack()
+{
+	FTransform SpawnTransform = FTransform(GetControlRotation(), GetActorLocation());
+	
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParams);
+}
+
 // Called every frame
 void AARCharacter::Tick(float DeltaTime)
 {
@@ -90,6 +101,9 @@ void AARCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 		// Look
 		EnhancedInputComponent->BindAction(LookAction.Get(), ETriggerEvent::Triggered, this, &AARCharacter::Look);
+
+		// Primary attack
+		EnhancedInputComponent->BindAction(PrimaryAttackAction.Get(), ETriggerEvent::Started, this, &AARCharacter::PrimaryAttack);
 	}
 
 }
