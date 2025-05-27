@@ -8,6 +8,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 AARCharacter::AARCharacter()
@@ -16,11 +17,15 @@ AARCharacter::AARCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+	SpringArm->bUsePawnControlRotation = true;
 	SpringArm->SetupAttachment(RootComponent);
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+
+	bUseControllerRotationYaw = false;
 }
 
 // Called when the game starts or when spawned
@@ -39,10 +44,10 @@ void AARCharacter::Move(const FInputActionInstance& Instance)
 	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 	
 	// Move forward
-	AddMovementInput(GetActorForwardVector(), MovementVector.X);
+	AddMovementInput(ForwardDirection, MovementVector.X);
 
 	// Move right
-	AddMovementInput(GetActorRightVector(), MovementVector.Y);
+	AddMovementInput(RightDirection, MovementVector.Y);
 }
 
 void AARCharacter::Look(const FInputActionInstance& Instance)
@@ -50,7 +55,7 @@ void AARCharacter::Look(const FInputActionInstance& Instance)
 	const FVector2D LookVector = Instance.GetValue().Get<FVector2D>();
 
 	AddControllerYawInput(LookVector.X);
-	AddControllerPitchInput(LookVector.Y);
+	AddControllerPitchInput(-LookVector.Y);
 }
 
 // Called every frame
