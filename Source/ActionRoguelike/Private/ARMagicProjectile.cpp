@@ -14,6 +14,7 @@ AARMagicProjectile::AARMagicProjectile()
 	PrimaryActorTick.bCanEverTick = true;
 
 	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComp"));
+	CollisionComp->SetCollisionProfileName("Projectile");
 	RootComponent = CollisionComp;
 
 	EffectComp = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("EffectComp"));

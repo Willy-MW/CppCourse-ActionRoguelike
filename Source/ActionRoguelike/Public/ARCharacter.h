@@ -33,6 +33,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Input")
 	TObjectPtr<UInputAction> PrimaryAttackAction;
 
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	TObjectPtr<UInputAction> JumpAction;
+
 protected:
 
 	UPROPERTY(EditAnywhere)

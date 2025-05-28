@@ -33,7 +33,6 @@ AARCharacter::AARCharacter()
 void AARCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 void AARCharacter::Move(const FInputActionInstance& Instance)
@@ -61,7 +60,8 @@ void AARCharacter::Look(const FInputActionInstance& Instance)
 
 void AARCharacter::PrimaryAttack()
 {
-	FTransform SpawnTransform = FTransform(GetControlRotation(), GetActorLocation());
+	FVector SpawnLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+	FTransform SpawnTransform = FTransform(GetControlRotation(), SpawnLocation);
 	
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -104,6 +104,9 @@ void AARCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 		// Primary attack
 		EnhancedInputComponent->BindAction(PrimaryAttackAction.Get(), ETriggerEvent::Started, this, &AARCharacter::PrimaryAttack);
+
+		// Jump
+		EnhancedInputComponent->BindAction(JumpAction.Get(), ETriggerEvent::Started, this, &ACharacter::Jump);
 	}
 
 }
