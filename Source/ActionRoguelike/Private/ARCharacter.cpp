@@ -3,6 +3,7 @@
 
 #include "ActionRoguelike/Public/ARCharacter.h"
 
+#include "ARInteractionComponent.h"
 #include "ARMagicProjectile.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -23,6 +24,8 @@ AARCharacter::AARCharacter()
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
+
+	InteractionComp = CreateDefaultSubobject<UARInteractionComponent>(TEXT("InteractionComp"));
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
@@ -69,6 +72,14 @@ void AARCharacter::PrimaryAttack()
 	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParams);
 }
 
+void AARCharacter::PrimaryInteract()
+{
+	if (InteractionComp)
+	{
+		InteractionComp->PrimaryInteract();	
+	}
+}
+
 // Called every frame
 void AARCharacter::Tick(float DeltaTime)
 {
@@ -107,6 +118,9 @@ void AARCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 		// Jump
 		EnhancedInputComponent->BindAction(JumpAction.Get(), ETriggerEvent::Started, this, &ACharacter::Jump);
+
+		// Primary interact
+		EnhancedInputComponent->BindAction(PrimaryInteractAction.Get(), ETriggerEvent::Started, this, &AARCharacter::PrimaryInteract); 
 	}
 
 }

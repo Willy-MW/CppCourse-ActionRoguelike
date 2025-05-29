@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "ARCharacter.generated.h"
 
+class UARInteractionComponent;
 struct FInputActionInstance;
 class UCameraComponent;
 class USpringArmComponent;
@@ -36,6 +37,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Input")
 	TObjectPtr<UInputAction> JumpAction;
 
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	TObjectPtr<UInputAction> PrimaryInteractAction;
+
 protected:
 
 	UPROPERTY(EditAnywhere)
@@ -46,6 +50,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* Camera;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UARInteractionComponent> InteractionComp;
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -55,6 +62,8 @@ protected:
 	void Look(const FInputActionInstance& Instance);
 
 	void PrimaryAttack();
+
+	void PrimaryInteract();
 
 public:	
 	// Called every frame
