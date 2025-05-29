@@ -61,7 +61,7 @@ void AARCharacter::Look(const FInputActionInstance& Instance)
 	AddControllerPitchInput(-LookVector.Y);
 }
 
-void AARCharacter::PrimaryAttack()
+void AARCharacter::PrimaryAttack_TimeElapsed()
 {
 	FVector SpawnLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 	FTransform SpawnTransform = FTransform(GetControlRotation(), SpawnLocation);
@@ -70,6 +70,13 @@ void AARCharacter::PrimaryAttack()
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParams);
+}
+
+void AARCharacter::PrimaryAttack()
+{
+	PlayAnimMontage(AttackAnim);
+
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &AARCharacter::PrimaryAttack_TimeElapsed, 0.2f);
 }
 
 void AARCharacter::PrimaryInteract()
