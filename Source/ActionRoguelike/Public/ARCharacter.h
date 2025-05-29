@@ -72,6 +72,8 @@ protected:
 
 	void PrimaryInteract();
 
+	FVector PerformLineTraceFromCamera() const;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

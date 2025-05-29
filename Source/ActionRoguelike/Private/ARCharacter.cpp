@@ -11,6 +11,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 AARCharacter::AARCharacter()
@@ -64,10 +65,13 @@ void AARCharacter::Look(const FInputActionInstance& Instance)
 void AARCharacter::PrimaryAttack_TimeElapsed()
 {
 	FVector SpawnLocation = GetMesh()->GetSocketLocation("Muzzle_01");
-	FTransform SpawnTransform = FTransform(GetControlRotation(), SpawnLocation);
+	FVector TargetLocation = PerformLineTraceFromCamera();
+	
+	FTransform SpawnTransform = FTransform(UKismetMathLibrary::FindLookAtRotation(SpawnLocation, TargetLocation), SpawnLocation);
 	
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	SpawnParams.Instigator = this;
 
 	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParams);
 }
@@ -85,6 +89,27 @@ void AARCharacter::PrimaryInteract()
 	{
 		InteractionComp->PrimaryInteract();	
 	}
+}
+
+FVector AARCharacter::PerformLineTraceFromCamera() const
+{
+	FHitResult HitResult;
+
+	FVector Start = Camera->GetComponentLocation();
+	FVector End = Start + Camera->GetComponentRotation().Vector() * 1000.f;
+
+	FCollisionObjectQueryParams ObjectQueryParams;
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
+
+	bool bBlockingHit = GetWorld()->LineTraceSingleByObjectType(HitResult, Start, End, ObjectQueryParams);
+
+	if (bBlockingHit)
+	{
+		return HitResult.ImpactPoint;
+	}
+
+	return End;
 }
 
 // Called every frame
