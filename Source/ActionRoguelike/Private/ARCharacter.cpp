@@ -62,7 +62,7 @@ void AARCharacter::Look(const FInputActionInstance& Instance)
 	AddControllerPitchInput(-LookVector.Y);
 }
 
-void AARCharacter::PrimaryAttack_TimeElapsed()
+void AARCharacter::Attack_TimeElapsed(const TSubclassOf<AActor>& Projectile)
 {
 	FVector SpawnLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 	FVector TargetLocation = PerformLineTraceFromCamera();
@@ -73,14 +73,37 @@ void AARCharacter::PrimaryAttack_TimeElapsed()
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	SpawnParams.Instigator = this;
 
-	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParams);
+	GetWorld()->SpawnActor<AActor>(Projectile, SpawnTransform, SpawnParams);
 }
 
 void AARCharacter::PrimaryAttack()
 {
 	PlayAnimMontage(AttackAnim);
 
-	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &AARCharacter::PrimaryAttack_TimeElapsed, 0.2f);
+	FTimerDelegate TimerDelegate;
+	TimerDelegate.BindUFunction(this, FName("Attack_TimeElapsed"), PrimaryAttackClass);
+
+	GetWorldTimerManager().SetTimer(TimerHandle_Attack, TimerDelegate, 0.2f, false);
+}
+
+void AARCharacter::SecondaryAttack()
+{
+	PlayAnimMontage(AttackAnim);
+
+	FTimerDelegate TimerDelegate;
+	TimerDelegate.BindUFunction(this, FName("Attack_TimeElapsed"), SecondaryAttackClass);
+
+	GetWorldTimerManager().SetTimer(TimerHandle_Attack, TimerDelegate, 0.2f, false);
+}
+
+void AARCharacter::DashAttack()
+{
+	PlayAnimMontage(AttackAnim);
+
+	FTimerDelegate TimerDelegate;
+	TimerDelegate.BindUFunction(this, FName("Attack_TimeElapsed"), DashAttackClass);
+
+	GetWorldTimerManager().SetTimer(TimerHandle_Attack, TimerDelegate, 0.2f, false);
 }
 
 void AARCharacter::PrimaryInteract()
@@ -147,6 +170,12 @@ void AARCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 		// Primary attack
 		EnhancedInputComponent->BindAction(PrimaryAttackAction.Get(), ETriggerEvent::Started, this, &AARCharacter::PrimaryAttack);
+
+		// Secondary attack
+		EnhancedInputComponent->BindAction(SecondaryAttackAction.Get(), ETriggerEvent::Started, this, &AARCharacter::SecondaryAttack);
+
+		// Dash attack
+		EnhancedInputComponent->BindAction(DashAttackAction.Get(), ETriggerEvent::Started, this, &AARCharacter::DashAttack);
 
 		// Jump
 		EnhancedInputComponent->BindAction(JumpAction.Get(), ETriggerEvent::Started, this, &ACharacter::Jump);

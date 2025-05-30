@@ -35,6 +35,12 @@ public:
 	TObjectPtr<UInputAction> PrimaryAttackAction;
 
 	UPROPERTY(EditDefaultsOnly, Category="Input")
+	TObjectPtr<UInputAction> SecondaryAttackAction;
+
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	TObjectPtr<UInputAction> DashAttackAction;
+
+	UPROPERTY(EditDefaultsOnly, Category="Input")
 	TObjectPtr<UInputAction> JumpAction;
 
 	UPROPERTY(EditDefaultsOnly, Category="Input")
@@ -43,8 +49,14 @@ public:
 protected:
 
 	UPROPERTY(EditAnywhere, Category="Attack")
-	TSubclassOf<AActor> ProjectileClass;
+	TSubclassOf<AActor> PrimaryAttackClass;
 
+	UPROPERTY(EditAnywhere, Category="Attack")
+	TSubclassOf<AActor> SecondaryAttackClass;
+
+	UPROPERTY(EditAnywhere, Category="Attack")
+	TSubclassOf<AActor> DashAttackClass;
+	
 	UPROPERTY(EditAnywhere, Category="Attack")
 	TObjectPtr<UAnimMontage> AttackAnim;
 
@@ -57,7 +69,7 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UARInteractionComponent> InteractionComp;
 
-	FTimerHandle TimerHandle_PrimaryAttack;
+	FTimerHandle TimerHandle_Attack;
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -66,9 +78,14 @@ protected:
 
 	void Look(const FInputActionInstance& Instance);
 
-	void PrimaryAttack_TimeElapsed();
+	UFUNCTION()
+	void Attack_TimeElapsed(const TSubclassOf<AActor>& Projectile);
 	
 	void PrimaryAttack();
+	
+	void SecondaryAttack();
+
+	void DashAttack();
 
 	void PrimaryInteract();
 

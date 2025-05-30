@@ -24,6 +24,7 @@ AARMagicProjectile::AARMagicProjectile()
 	ProjectileMovementComp->InitialSpeed = 1000.f;
 	ProjectileMovementComp->bRotationFollowsVelocity = true;
 	ProjectileMovementComp->bInitialVelocityInLocalSpace = true;
+	ProjectileMovementComp->ProjectileGravityScale = 0.f;
 
 }
 
