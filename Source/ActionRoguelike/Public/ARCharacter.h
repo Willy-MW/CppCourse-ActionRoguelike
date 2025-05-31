@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "ARCharacter.generated.h"
 
+class UARAttributeComponent;
 class UARInteractionComponent;
 struct FInputActionInstance;
 class UCameraComponent;
@@ -47,6 +48,9 @@ public:
 	TObjectPtr<UInputAction> PrimaryInteractAction;
 
 protected:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	TObjectPtr<UARAttributeComponent> AttributeComp;
 
 	UPROPERTY(EditAnywhere, Category="Attack")
 	TSubclassOf<AActor> PrimaryAttackClass;

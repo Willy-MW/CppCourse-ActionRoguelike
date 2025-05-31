@@ -3,9 +3,26 @@
 
 #include "ARMagicProjectile.h"
 
+#include "ARAttributeComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Particles/ParticleSystemComponent.h"
+
+
+void AARMagicProjectile::OnActorOverlap_Implementation(UPrimitiveComponent* OverlappedComponent, AActor* Actor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (Actor)
+	{
+		UARAttributeComponent* AttributeComponent = Cast<UARAttributeComponent>(Actor->GetComponentByClass(UARAttributeComponent::StaticClass()));
+		if (AttributeComponent)
+		{
+			AttributeComponent->ApplyHealthChange(-20.f);
+
+			Destroy();
+		}
+	}
+}
 
 // Sets default values
 AARMagicProjectile::AARMagicProjectile()
@@ -16,6 +33,7 @@ AARMagicProjectile::AARMagicProjectile()
 	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComp"));
 	CollisionComp->SetCollisionProfileName("Projectile");
 	RootComponent = CollisionComp;
+	CollisionComp->OnComponentBeginOverlap.AddDynamic(this, &AARMagicProjectile::OnActorOverlap);
 
 	EffectComp = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("EffectComp"));
 	EffectComp->SetupAttachment(CollisionComp);

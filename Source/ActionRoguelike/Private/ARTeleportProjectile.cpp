@@ -10,7 +10,7 @@
 
 AARTeleportProjectile::AARTeleportProjectile()
 {
-	
+	ProjectileMovementComp->InitialSpeed = 3000.f;
 }
 
 void AARTeleportProjectile::BeginPlay()
@@ -26,7 +26,7 @@ void AARTeleportProjectile::BeginPlay()
 void AARTeleportProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	FVector NormalImpulse, const FHitResult& Hit)
 {
-	EffectTimer.Invalidate();
+	GetWorld()->GetTimerManager().ClearTimer(EffectTimer);
 	Explode();
 }
 

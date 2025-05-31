@@ -3,6 +3,7 @@
 
 #include "ActionRoguelike/Public/ARCharacter.h"
 
+#include "ARAttributeComponent.h"
 #include "ARInteractionComponent.h"
 #include "ARMagicProjectile.h"
 #include "Camera/CameraComponent.h"
@@ -27,6 +28,7 @@ AARCharacter::AARCharacter()
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 
 	InteractionComp = CreateDefaultSubobject<UARInteractionComponent>(TEXT("InteractionComp"));
+	AttributeComp = CreateDefaultSubobject<UARAttributeComponent>(TEXT("AttributeComp"));
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
