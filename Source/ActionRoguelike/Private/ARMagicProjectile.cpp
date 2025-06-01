@@ -10,11 +10,13 @@
 
 
 void AARMagicProjectile::OnActorOverlap_Implementation(UPrimitiveComponent* OverlappedComponent, AActor* Actor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+                                                       UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+                                                       bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (Actor)
+	if (Actor && Actor != GetInstigator())
 	{
-		UARAttributeComponent* AttributeComponent = Cast<UARAttributeComponent>(Actor->GetComponentByClass(UARAttributeComponent::StaticClass()));
+		UARAttributeComponent* AttributeComponent = Cast<UARAttributeComponent>(
+			Actor->GetComponentByClass(UARAttributeComponent::StaticClass()));
 		if (AttributeComponent)
 		{
 			AttributeComponent->ApplyHealthChange(-20.f);
@@ -27,7 +29,7 @@ void AARMagicProjectile::OnActorOverlap_Implementation(UPrimitiveComponent* Over
 // Sets default values
 AARMagicProjectile::AARMagicProjectile()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComp"));
@@ -43,20 +45,16 @@ AARMagicProjectile::AARMagicProjectile()
 	ProjectileMovementComp->bRotationFollowsVelocity = true;
 	ProjectileMovementComp->bInitialVelocityInLocalSpace = true;
 	ProjectileMovementComp->ProjectileGravityScale = 0.f;
-
 }
 
 // Called when the game starts or when spawned
 void AARMagicProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
 void AARMagicProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
-
