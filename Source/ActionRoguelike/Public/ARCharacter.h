@@ -95,6 +95,11 @@ protected:
 
 	FVector PerformLineTraceFromCamera() const;
 
+	UFUNCTION()
+	void OnHealthChanged(AActor* InstigatorActor, UARAttributeComponent* OwningComp, float NewHealth, float DeltaHealth);
+
+	virtual void PostInitializeComponents() override;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

@@ -137,6 +137,23 @@ FVector AARCharacter::PerformLineTraceFromCamera() const
 	return End;
 }
 
+void AARCharacter::OnHealthChanged(AActor* InstigatorActor, UARAttributeComponent* OwningComp, float NewHealth,
+	float DeltaHealth)
+{
+	if (NewHealth <= 0.f && DeltaHealth < 0.f)
+	{
+		APlayerController* PlayerController = Cast<APlayerController>(GetController());
+		DisableInput(PlayerController);
+	}
+}
+
+void AARCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	AttributeComp->OnHealthChanged.AddDynamic(this, &AARCharacter::OnHealthChanged);
+}
+
 // Called every frame
 void AARCharacter::Tick(float DeltaTime)
 {
