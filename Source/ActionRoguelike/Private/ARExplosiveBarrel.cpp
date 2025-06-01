@@ -29,8 +29,6 @@ void AARExplosiveBarrel::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 {
 	if (OtherActor->GetClass()->IsChildOf(AARMagicProjectile::StaticClass()))
 	{
-		if(GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("BOOM"));
 		Explode();
 	}
 }

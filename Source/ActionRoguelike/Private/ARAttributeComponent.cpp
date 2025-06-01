@@ -13,5 +13,7 @@ bool UARAttributeComponent::ApplyHealthChange(float DeltaHealth)
 {
 	Health += DeltaHealth;
 
+	OnHealthChanged.Broadcast(nullptr, this, Health, DeltaHealth);
+	
 	return true;
 }
