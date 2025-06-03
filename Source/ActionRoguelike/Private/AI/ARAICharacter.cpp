@@ -3,25 +3,36 @@
 
 #include "AI/ARAICharacter.h"
 
+#include "AIController.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "Perception/PawnSensingComponent.h"
+
 // Sets default values
 AARAICharacter::AARAICharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	SensingComponent = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("SensingComponent"));
 }
 
-// Called when the game starts or when spawned
-void AARAICharacter::BeginPlay()
+void AARAICharacter::PostInitializeComponents()
 {
-	Super::BeginPlay();
-	
+	Super::PostInitializeComponents();
+
+	SensingComponent->OnSeePawn.AddDynamic(this, &AARAICharacter::OnPawnSeen);
 }
 
-// Called every frame
-void AARAICharacter::Tick(float DeltaTime)
+void AARAICharacter::OnPawnSeen(APawn* InPawn)
 {
-	Super::Tick(DeltaTime);
+	if (AAIController* AIC = Cast<AAIController>(GetController()))
+	{
+		UBlackboardComponent* BBComp = AIC->GetBlackboardComponent();
 
+		BBComp->SetValueAsObject("TargetActor", InPawn);
+
+		DrawDebugString(GetWorld(), GetActorLocation(), "PLAYER SPOTTED", nullptr, FColor::White, 4.f, true);
+	}
 }
+
 

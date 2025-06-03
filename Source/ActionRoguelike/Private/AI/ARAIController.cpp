@@ -11,10 +11,10 @@ void AARAIController::BeginPlay()
 
 	RunBehaviorTree(BehaviorTree);
 
-	APawn* MyPawn = UGameplayStatics::GetPlayerPawn(this, 0);
-	if (MyPawn)
-	{
-		GetBlackboardComponent()->SetValueAsVector(TEXT("Location"), MyPawn->GetActorLocation());
-		GetBlackboardComponent()->SetValueAsObject(TEXT("TargetActor"), MyPawn);
-	}
+	// APawn* MyPawn = UGameplayStatics::GetPlayerPawn(this, 0);
+	// if (MyPawn)
+	// {
+	// 	GetBlackboardComponent()->SetValueAsVector(TEXT("Location"), MyPawn->GetActorLocation());
+	// 	GetBlackboardComponent()->SetValueAsObject(TEXT("TargetActor"), MyPawn);
+	// }
 }

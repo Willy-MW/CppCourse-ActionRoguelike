@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "ARAICharacter.generated.h"
 
+class UPawnSensingComponent;
+
 UCLASS()
 class ACTIONROGUELIKE_API AARAICharacter : public ACharacter
 {
@@ -16,11 +18,13 @@ public:
 	AARAICharacter();
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPawnSensingComponent> SensingComponent;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	virtual void PostInitializeComponents() override;
+
+	UFUNCTION()
+	void OnPawnSeen(APawn* InPawn);
 
 };
