@@ -15,15 +15,27 @@ class ACTIONROGUELIKE_API AARMagicProjectile : public AActor
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	TObjectPtr<USphereComponent> CollisionComp;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovementComp;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<UParticleSystemComponent> EffectComp;
-	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	TObjectPtr<UParticleSystemComponent> ProjectileParticleComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	TObjectPtr<UAudioComponent> AudioComp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Visuals")
+	TObjectPtr<UParticleSystem> ImpactEffect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Visuals")
+	TObjectPtr<UParticleSystem> CastEffect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Visuals")
+	TObjectPtr<USoundBase> ImpactSound;
+
 public:
 	UFUNCTION(BlueprintNativeEvent)
 	void OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Actor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -32,11 +44,10 @@ public:
 	AARMagicProjectile();
 
 protected:
-	// Called when the game starts or when spawned
+
+	virtual void PostInitializeComponents() override;
+
+	virtual void Explode();
+
 	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 };

@@ -14,28 +14,15 @@ class ACTIONROGUELIKE_API AARTeleportProjectile : public AARMagicProjectile
 {
 	GENERATED_BODY()
 
-public:	
-	// Sets default values for this actor's properties
-	AARTeleportProjectile();
-
 protected:
 
 	FTimerHandle EffectTimer;
-
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<UParticleSystem> ExplodeEffect;
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	UFUNCTION()
-	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 	
-	void Explode();
+	virtual void Explode() override;
 	
 	void PerformTeleport();
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	
 };
