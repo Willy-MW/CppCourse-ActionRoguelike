@@ -40,9 +40,20 @@ void AARMagicProjectile::PostInitializeComponents()
 	CollisionComp->OnComponentBeginOverlap.AddDynamic(this, &AARMagicProjectile::OnActorOverlap);
 }
 
+void AARMagicProjectile::Explode(bool bDestroy)
+{
+	ProjectileMovementComp->StopMovementImmediately();
+	AudioComp->Stop();
+
+	if (ImpactSound) UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, GetActorLocation());
+	if (ImpactEffect) UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactEffect, GetActorLocation());
+	
+	if (bDestroy) Destroy();
+}
+
 void AARMagicProjectile::OnActorOverlap_Implementation(UPrimitiveComponent* OverlappedComponent, AActor* Actor,
-													   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
-													   bool bFromSweep, const FHitResult& SweepResult)
+                                                       UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+                                                       bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (Actor && Actor != GetInstigator())
 	{
@@ -54,18 +65,6 @@ void AARMagicProjectile::OnActorOverlap_Implementation(UPrimitiveComponent* Over
 		
 		Explode();
 	}
-}
-
-void AARMagicProjectile::Explode()
-{
-	ProjectileMovementComp->StopMovementImmediately();
-	
-	AudioComp->Stop();
-
-	if (ImpactSound) UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, GetActorLocation());
-	if (ImpactEffect) UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactEffect, GetActorLocation());
-	
-	Destroy();
 }
 
 void AARMagicProjectile::BeginPlay()

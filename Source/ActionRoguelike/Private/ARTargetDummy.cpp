@@ -27,7 +27,7 @@ void AARTargetDummy::OnHealthChanged(AActor* InstigatorActor, UARAttributeCompon
 {
 	if (DeltaHealth < 0.f)
 	{
-		MeshComp->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);	
+		MeshComp->SetScalarParameterValueOnMaterials("TimeOfHit", GetWorld()->TimeSeconds);	
 	}
 }
 

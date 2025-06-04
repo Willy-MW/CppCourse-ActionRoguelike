@@ -3,16 +3,29 @@
 
 #include "ARTeleportProjectile.h"
 
+#include "GameFramework/ProjectileMovementComponent.h"
+#include "Particles/ParticleSystemComponent.h"
+
+AARTeleportProjectile::AARTeleportProjectile()
+{
+	ProjectileMovementComp->InitialSpeed = 4000.0f;
+}
+
 void AARTeleportProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetWorld()->GetTimerManager().SetTimer(EffectTimer, this, &AARTeleportProjectile::Explode, .2f);
+	FTimerDelegate TimerDel;
+	TimerDel.BindUFunction(this, FName("Explode"), false);
+	
+	GetWorld()->GetTimerManager().SetTimer(EffectTimer, TimerDel, .2f, false);
 }
 
-void AARTeleportProjectile::Explode()
+void AARTeleportProjectile::Explode(bool bDestroy)
 {
-	Super::Explode();
+	Super::Explode(false);
+
+	ProjectileParticleComp->Deactivate();
 
 	GetWorld()->GetTimerManager().SetTimer(EffectTimer, this, &AARTeleportProjectile::PerformTeleport, .2f);
 }

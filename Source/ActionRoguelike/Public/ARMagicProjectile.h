@@ -47,7 +47,8 @@ protected:
 
 	virtual void PostInitializeComponents() override;
 
-	virtual void Explode();
+	UFUNCTION()
+	virtual void Explode(bool bDestroy = true);
 
 	virtual void BeginPlay() override;
 };
