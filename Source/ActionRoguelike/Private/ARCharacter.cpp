@@ -140,6 +140,11 @@ FVector AARCharacter::PerformLineTraceFromCamera() const
 void AARCharacter::OnHealthChanged(AActor* InstigatorActor, UARAttributeComponent* OwningComp, float NewHealth,
 	float DeltaHealth)
 {
+	if (DeltaHealth < 0.f)
+	{
+		GetMesh()->SetScalarParameterValueOnMaterials("TimeOfHit", GetWorld()->TimeSeconds);	
+	}
+	
 	if (NewHealth <= 0.f && DeltaHealth < 0.f)
 	{
 		APlayerController* PlayerController = Cast<APlayerController>(GetController());
