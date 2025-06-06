@@ -10,6 +10,16 @@ UARAttributeComponent::UARAttributeComponent()
 	Health = MaxHealth;
 }
 
+float UARAttributeComponent::GetHealth() const
+{
+	return Health;
+}
+
+float UARAttributeComponent::GetMaxHealth() const
+{
+	return MaxHealth;
+}
+
 bool UARAttributeComponent::ApplyHealthChange(float DeltaHealth)
 {
 	float NewHealth = FMath::Clamp(Health + DeltaHealth, 0, MaxHealth);

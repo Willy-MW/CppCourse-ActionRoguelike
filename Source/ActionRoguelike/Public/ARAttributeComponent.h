@@ -21,6 +21,10 @@ public:
 	// Sets default values for this component's properties
 	UARAttributeComponent();
 
+	float GetHealth() const;
+
+	float GetMaxHealth() const;
+	
 	UFUNCTION(BlueprintCallable, Category="Attributes")
 	bool ApplyHealthChange(float DeltaHealth);
 
@@ -34,5 +38,4 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Attributes")
 	float MaxHealth;
-		
 };
