@@ -12,6 +12,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
@@ -68,7 +69,6 @@ void AARCharacter::Attack_TimeElapsed(const TSubclassOf<AActor>& Projectile)
 {
 	FVector SpawnLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 	FVector TargetLocation = PerformLineTraceFromCamera();
-	
 	FTransform SpawnTransform = FTransform(UKismetMathLibrary::FindLookAtRotation(SpawnLocation, TargetLocation), SpawnLocation);
 	
 	FActorSpawnParameters SpawnParams;
@@ -76,6 +76,8 @@ void AARCharacter::Attack_TimeElapsed(const TSubclassOf<AActor>& Projectile)
 	SpawnParams.Instigator = this;
 
 	GetWorld()->SpawnActor<AActor>(Projectile, SpawnTransform, SpawnParams);
+	
+	if (CastEffect) UGameplayStatics::SpawnEmitterAttached(CastEffect, GetMesh(), "Muzzle_01");
 }
 
 void AARCharacter::PrimaryAttack()
@@ -157,13 +159,6 @@ void AARCharacter::PostInitializeComponents()
 	Super::PostInitializeComponents();
 
 	AttributeComp->OnHealthChanged.AddDynamic(this, &AARCharacter::OnHealthChanged);
-}
-
-// Called every frame
-void AARCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input

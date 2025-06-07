@@ -31,10 +31,16 @@ protected:
 	TObjectPtr<UParticleSystem> ImpactEffect;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Visuals")
-	TObjectPtr<UParticleSystem> CastEffect;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Visuals")
 	TObjectPtr<USoundBase> ImpactSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Visuals|CameraShake")
+	TSubclassOf<class UCameraShakeBase> CameraShake;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Visuals|CameraShake")
+	float CameraShakeInnerRadius;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Visuals|CameraShake")
+	float CameraShakeOuterRadius;
 
 public:
 	UFUNCTION(BlueprintNativeEvent)

@@ -64,6 +64,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Attack")
 	TObjectPtr<UAnimMontage> AttackAnim;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Attack")
+	TObjectPtr<UParticleSystem> CastEffect;
+
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArm;
 
@@ -101,8 +104,6 @@ protected:
 	virtual void PostInitializeComponents() override;
 
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 	
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

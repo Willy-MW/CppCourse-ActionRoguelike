@@ -11,6 +11,7 @@ AARPickUp::AARPickUp()
 	PrimaryActorTick.bCanEverTick = true;
 
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
+	MeshComp->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 	RootComponent = MeshComp;
 	
 	RespawnTime = 10.f;

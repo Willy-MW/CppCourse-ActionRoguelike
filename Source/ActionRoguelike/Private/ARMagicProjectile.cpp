@@ -47,6 +47,7 @@ void AARMagicProjectile::Explode(bool bDestroy)
 
 	if (ImpactSound) UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, GetActorLocation());
 	if (ImpactEffect) UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactEffect, GetActorLocation());
+	if (CameraShake) UGameplayStatics::PlayWorldCameraShake(GetWorld(), CameraShake, GetActorLocation(), CameraShakeInnerRadius, CameraShakeOuterRadius);
 	
 	if (bDestroy) Destroy();
 }
@@ -70,8 +71,6 @@ void AARMagicProjectile::OnActorOverlap_Implementation(UPrimitiveComponent* Over
 void AARMagicProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (CastEffect) UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), CastEffect, GetActorLocation());
 
 	AudioComp->Play();
 }
