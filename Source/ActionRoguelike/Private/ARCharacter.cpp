@@ -147,7 +147,7 @@ void AARCharacter::OnHealthChanged(AActor* InstigatorActor, UARAttributeComponen
 		GetMesh()->SetScalarParameterValueOnMaterials("TimeOfHit", GetWorld()->TimeSeconds);	
 	}
 	
-	if (NewHealth <= 0.f && DeltaHealth < 0.f)
+	if (DeltaHealth < 0.f && NewHealth <= 0.f)
 	{
 		APlayerController* PlayerController = Cast<APlayerController>(GetController());
 		DisableInput(PlayerController);

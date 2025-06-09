@@ -42,6 +42,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Visuals|CameraShake")
 	float CameraShakeOuterRadius;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Damage")
+	float Damage;
+
 public:
 	UFUNCTION(BlueprintNativeEvent)
 	void OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Actor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

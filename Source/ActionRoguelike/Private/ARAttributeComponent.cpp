@@ -20,14 +20,14 @@ float UARAttributeComponent::GetMaxHealth() const
 	return MaxHealth;
 }
 
-bool UARAttributeComponent::ApplyHealthChange(float DeltaHealth)
+bool UARAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float DeltaHealth)
 {
 	float NewHealth = FMath::Clamp(Health + DeltaHealth, 0, MaxHealth);
 
 	if (NewHealth != Health)
 	{
 		Health = NewHealth;
-		OnHealthChanged.Broadcast(nullptr, this, Health, DeltaHealth);
+		OnHealthChanged.Broadcast(InstigatorActor, this, Health, DeltaHealth);
 	
 		return true;
 	}

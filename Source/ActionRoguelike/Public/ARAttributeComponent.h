@@ -26,7 +26,7 @@ public:
 	float GetMaxHealth() const;
 	
 	UFUNCTION(BlueprintCallable, Category="Attributes")
-	bool ApplyHealthChange(float DeltaHealth);
+	bool ApplyHealthChange(AActor* InstigatorActor, float DeltaHealth);
 
 	UFUNCTION(BlueprintCallable)
 	bool IsAlive() const;

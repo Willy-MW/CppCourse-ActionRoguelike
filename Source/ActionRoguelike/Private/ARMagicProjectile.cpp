@@ -31,6 +31,8 @@ AARMagicProjectile::AARMagicProjectile()
 
 	AudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComp"));
 	AudioComp->SetupAttachment(CollisionComp);
+
+	Damage = 20.f;
 }
 
 void AARMagicProjectile::PostInitializeComponents()
@@ -58,10 +60,10 @@ void AARMagicProjectile::OnActorOverlap_Implementation(UPrimitiveComponent* Over
 {
 	if (Actor && Actor != GetInstigator())
 	{
-		UARAttributeComponent* AttributeComponent = Cast<UARAttributeComponent>(Actor->GetComponentByClass(UARAttributeComponent::StaticClass()));
+		UARAttributeComponent* AttributeComponent = Actor->FindComponentByClass<UARAttributeComponent>();
 		if (AttributeComponent)
 		{
-			AttributeComponent->ApplyHealthChange(-20.f);
+			AttributeComponent->ApplyHealthChange(GetInstigator(), -Damage);
 		}
 		
 		Explode();

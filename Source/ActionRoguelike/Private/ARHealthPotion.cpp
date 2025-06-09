@@ -17,10 +17,10 @@ AARHealthPotion::AARHealthPotion()
 
 void AARHealthPotion::ApplyEffect_Implementation(APawn* Pawn)
 {
-	UARAttributeComponent* AttributeComp = Cast<UARAttributeComponent>(Pawn->GetComponentByClass(UARAttributeComponent::StaticClass()));
+	UARAttributeComponent* AttributeComp = Pawn->FindComponentByClass<UARAttributeComponent>();
 	if (AttributeComp && (AttributeComp->GetHealth() < AttributeComp->GetMaxHealth()))
 	{
-		AttributeComp->ApplyHealthChange(HealingAmount);
+		AttributeComp->ApplyHealthChange(this, HealingAmount);
 
 		Super::ApplyEffect_Implementation(Pawn);
 	}

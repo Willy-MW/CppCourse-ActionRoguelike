@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "ARAICharacter.generated.h"
 
+class UARAttributeComponent;
 class UPawnSensingComponent;
 
 UCLASS()
@@ -18,13 +19,21 @@ public:
 	AARAICharacter();
 
 protected:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	TObjectPtr<UARAttributeComponent> AttributeComp;
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UPawnSensingComponent> SensingComponent;
 
 	virtual void PostInitializeComponents() override;
 
+	void SetTarget(AActor* Target);
+	
 	UFUNCTION()
 	void OnPawnSeen(APawn* InPawn);
+
+	UFUNCTION()
+	void OnHealthChanged(AActor* InstigatorActor, UARAttributeComponent* OwningComp, float NewHealth, float DeltaHealth);
 
 };

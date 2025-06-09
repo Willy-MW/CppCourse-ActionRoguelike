@@ -17,14 +17,23 @@ void AARGameModeBase::OnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryIn
 		return;
 	}
 
+	TArray<FVector> Locations = QueryInstance->GetResultsAsLocations();
+
+	if (Locations.IsValidIndex(0))
+	{
+		GetWorld()->SpawnActor<AActor>(MinionClass, Locations[0], FRotator::ZeroRotator);
+	}
+}
+
+void AARGameModeBase::SpawnBotTimerElapsed()
+{
 	int32 NrOfAliveBots = 0;
 
 	for (TActorIterator<AARAICharacter> It(GetWorld()); It; ++It)
 	{
 		AARAICharacter* Bot = *It;
 
-		UARAttributeComponent* AttributeComponent = Cast<UARAttributeComponent>(
-			Bot->GetComponentByClass(UARAttributeComponent::StaticClass()));
+		UARAttributeComponent* AttributeComponent = Bot->FindComponentByClass<UARAttributeComponent>();
 		if (AttributeComponent && AttributeComponent->IsAlive())
 		{
 			NrOfAliveBots++;
@@ -42,17 +51,7 @@ void AARGameModeBase::OnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryIn
 	{
 		return;
 	}
-
-	TArray<FVector> Locations = QueryInstance->GetResultsAsLocations();
-
-	if (Locations.IsValidIndex(0))
-	{
-		GetWorld()->SpawnActor<AActor>(MinionClass, Locations[0], FRotator::ZeroRotator);
-	}
-}
-
-void AARGameModeBase::SpawnBotTimerElapsed()
-{
+	
 	UEnvQueryInstanceBlueprintWrapper* QueryInstance = UEnvQueryManager::RunEQSQuery(
 		this, SpawnBotQuery, this, EEnvQueryRunMode::RandomBest5Pct, nullptr);
 	if (ensure(QueryInstance))
