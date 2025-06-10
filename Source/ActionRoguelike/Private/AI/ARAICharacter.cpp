@@ -53,6 +53,8 @@ void AARAICharacter::OnHealthChanged(AActor* InstigatorActor, UARAttributeCompon
 		{
 			SetTarget(InstigatorActor);
 		}
+
+		GetMesh()->SetScalarParameterValueOnMaterials("TimeOfHit", GetWorld()->TimeSeconds);	
 		
 		if (NewHealth <= 0.f)
 		{

@@ -16,7 +16,12 @@ class ACTIONROGUELIKE_API UARBTT_RangedAttack : public UBTTaskNode
 
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
+	UARBTT_RangedAttack();
+	
 protected:
+	UPROPERTY(EditAnywhere)
+	float MaxBulletSpread;
+
 	UPROPERTY(EditAnywhere, Category = "AI")
 	TSubclassOf<AActor> ProjectileClass;
 };

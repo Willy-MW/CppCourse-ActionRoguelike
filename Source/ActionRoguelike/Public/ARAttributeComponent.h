@@ -15,6 +15,12 @@ class ACTIONROGUELIKE_API UARAttributeComponent : public UActorComponent
 
 public:
 
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	static UARAttributeComponent* GetAttributes(AActor* FromActor);
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes", meta = (DisplayName="IsAlive"))
+	static bool IsActorAlive(AActor* Actor);
+
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;
 	

@@ -3,6 +3,27 @@
 
 #include "ARAttributeComponent.h"
 
+UARAttributeComponent* UARAttributeComponent::GetAttributes(AActor* FromActor)
+{
+	if (FromActor)
+	{
+		return FromActor->FindComponentByClass<UARAttributeComponent>();
+	}
+
+	return nullptr;
+}
+
+bool UARAttributeComponent::IsActorAlive(AActor* Actor)
+{
+	UARAttributeComponent* AttributeComponent = GetAttributes(Actor);
+	if (AttributeComponent)
+	{
+		return AttributeComponent->IsAlive();
+	}
+
+	return false;
+}
+
 // Sets default values for this component's properties
 UARAttributeComponent::UARAttributeComponent()
 {
