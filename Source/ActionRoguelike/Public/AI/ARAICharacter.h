@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "ARAICharacter.generated.h"
 
+class UARWorldUserWidget;
 class UARAttributeComponent;
 class UPawnSensingComponent;
 
@@ -20,11 +21,17 @@ public:
 
 protected:
 
+	UPROPERTY()
+	UARWorldUserWidget* ActiveHealthBar;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	TObjectPtr<UARAttributeComponent> AttributeComp;
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UPawnSensingComponent> SensingComponent;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> HealthBarWidgetClass;
 
 	virtual void PostInitializeComponents() override;
 

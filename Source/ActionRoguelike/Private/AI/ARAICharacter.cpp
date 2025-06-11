@@ -5,8 +5,10 @@
 
 #include "AIController.h"
 #include "ARAttributeComponent.h"
+#include "ARWorldUserWidget.h"
 #include "BrainComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Blueprint/UserWidget.h"
 #include "Perception/PawnSensingComponent.h"
 
 // Sets default values
@@ -52,6 +54,16 @@ void AARAICharacter::OnHealthChanged(AActor* InstigatorActor, UARAttributeCompon
 		if (InstigatorActor != this)
 		{
 			SetTarget(InstigatorActor);
+		}
+
+		if (ActiveHealthBar == nullptr)
+		{
+			ActiveHealthBar = CreateWidget<UARWorldUserWidget>(GetWorld(), HealthBarWidgetClass);
+			if (ActiveHealthBar)
+			{
+				ActiveHealthBar->AttachedActor = this;
+				ActiveHealthBar->AddToViewport();
+			}
 		}
 
 		GetMesh()->SetScalarParameterValueOnMaterials("TimeOfHit", GetWorld()->TimeSeconds);	
