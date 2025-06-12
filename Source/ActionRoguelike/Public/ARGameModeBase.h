@@ -38,5 +38,8 @@ protected:
 	
 public:
 	virtual void StartPlay() override;
+
+	UFUNCTION(Exec)
+	void KillAllBots();
 	
 };

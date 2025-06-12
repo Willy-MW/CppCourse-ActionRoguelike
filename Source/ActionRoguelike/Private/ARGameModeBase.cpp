@@ -33,7 +33,7 @@ void AARGameModeBase::SpawnBotTimerElapsed()
 	{
 		AARAICharacter* Bot = *It;
 
-		UARAttributeComponent* AttributeComponent = Bot->FindComponentByClass<UARAttributeComponent>();
+		UARAttributeComponent* AttributeComponent = UARAttributeComponent::GetAttributes(Bot);
 		if (AttributeComponent && AttributeComponent->IsAlive())
 		{
 			NrOfAliveBots++;
@@ -66,4 +66,18 @@ void AARGameModeBase::StartPlay()
 
 	GetWorldTimerManager().SetTimer(TimerHandle_SpawnBots, this, &AARGameModeBase::SpawnBotTimerElapsed,
 	                                SpawnTimerInterval, true);
+}
+
+void AARGameModeBase::KillAllBots()
+{
+	for (TActorIterator<AARAICharacter> It(GetWorld()); It; ++It)
+	{
+		AARAICharacter* Bot = *It;
+
+		UARAttributeComponent* AttributeComponent = UARAttributeComponent::GetAttributes(Bot);
+		if (AttributeComponent && AttributeComponent->IsAlive())
+		{
+			AttributeComponent->Kill(this);
+		}
+	}
 }

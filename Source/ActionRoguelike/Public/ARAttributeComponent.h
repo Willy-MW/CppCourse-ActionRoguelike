@@ -30,11 +30,16 @@ public:
 	float GetHealth() const;
 
 	float GetMaxHealth() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetHealthPercent() const;
+
+	bool Kill(AActor* InstigatorActor);
 	
 	UFUNCTION(BlueprintCallable, Category="Attributes")
 	bool ApplyHealthChange(AActor* InstigatorActor, float DeltaHealth);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	bool IsAlive() const;
 
 protected:

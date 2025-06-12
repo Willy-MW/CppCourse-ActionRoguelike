@@ -41,8 +41,23 @@ float UARAttributeComponent::GetMaxHealth() const
 	return MaxHealth;
 }
 
+float UARAttributeComponent::GetHealthPercent() const
+{
+	return Health / MaxHealth;
+}
+
+bool UARAttributeComponent::Kill(AActor* InstigatorActor)
+{
+	return ApplyHealthChange(InstigatorActor, -Health);
+}
+
 bool UARAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float DeltaHealth)
 {
+	if (GetOwner()->CanBeDamaged())
+	{
+		return false;
+	}
+	
 	float NewHealth = FMath::Clamp(Health + DeltaHealth, 0, MaxHealth);
 
 	if (NewHealth != Health)
