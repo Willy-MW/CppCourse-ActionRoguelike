@@ -53,7 +53,7 @@ bool UARAttributeComponent::Kill(AActor* InstigatorActor)
 
 bool UARAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float DeltaHealth)
 {
-	if (GetOwner()->CanBeDamaged())
+	if (!GetOwner()->CanBeDamaged())
 	{
 		return false;
 	}

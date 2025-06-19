@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTService.h"
-#include "ARBTService_CheckAttackRange.generated.h"
+#include "ARBTS_CheckAttackRange.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ACTIONROGUELIKE_API UARBTService_CheckAttackRange : public UBTService
+class ACTIONROGUELIKE_API UARBTS_CheckAttackRange : public UBTService
 {
 	GENERATED_BODY()
 

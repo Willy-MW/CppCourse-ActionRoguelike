@@ -25,6 +25,7 @@ EBTNodeResult::Type UARBTT_HealSelf::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 			return EBTNodeResult::Failed;
 		}
 		
+		UE_LOG(LogTemp, Warning, TEXT("Healing self"));
 		AttributeComponent->ApplyHealthChange(AIPawn, AttributeComponent->GetMaxHealth() - AttributeComponent->GetHealth());
 		
 		return EBTNodeResult::Succeeded;
