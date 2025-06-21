@@ -4,9 +4,12 @@
 #include "ARGameModeBase.h"
 
 #include "ARAttributeComponent.h"
+#include "ARCharacter.h"
 #include "EngineUtils.h"
 #include "AI/ARAICharacter.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
+
+static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("ar.SpawnBots"), true, TEXT("Enable spawning of bots via timer"), ECVF_Cheat);
 
 void AARGameModeBase::OnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance,
                                       EEnvQueryStatus::Type QueryStatus)
@@ -27,6 +30,12 @@ void AARGameModeBase::OnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryIn
 
 void AARGameModeBase::SpawnBotTimerElapsed()
 {
+	if (!CVarSpawnBots.GetValueOnGameThread())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Spawn bot disabled by CVarSpawnBots"));
+		return;
+	}
+	
 	int32 NrOfAliveBots = 0;
 
 	for (TActorIterator<AARAICharacter> It(GetWorld()); It; ++It)
@@ -60,6 +69,32 @@ void AARGameModeBase::SpawnBotTimerElapsed()
 	}
 }
 
+void AARGameModeBase::RespawnPlayerElapsed(AController* Controller)
+{
+	if (ensure(Controller))
+	{
+		Controller->UnPossess();
+		
+		RestartPlayer(Controller);
+	}
+}
+
+void AARGameModeBase::OnActorKilled(AActor* KilledActor, AActor* Killer)
+{
+	AARCharacter* Player = Cast<AARCharacter>(KilledActor);
+
+	if (Player)
+	{
+		FTimerHandle TimerHandle_RespawnDelay;
+
+		FTimerDelegate TimerDelegate;
+		TimerDelegate.BindUFunction(this, FName("RespawnPlayerElapsed"), Player->GetController());
+
+		float RespawnDelay = 2.f;
+		GetWorldTimerManager().SetTimer(TimerHandle_RespawnDelay, TimerDelegate, RespawnDelay, false);
+	}
+}
+
 void AARGameModeBase::StartPlay()
 {
 	Super::StartPlay();
@@ -81,3 +116,5 @@ void AARGameModeBase::KillAllBots()
 		}
 	}
 }
+
+

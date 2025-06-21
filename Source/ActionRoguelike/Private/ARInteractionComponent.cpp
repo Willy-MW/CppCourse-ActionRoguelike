@@ -5,6 +5,8 @@
 
 #include "ARGameplayInterface.h"
 
+static TAutoConsoleVariable<bool> CVarDrawDebug(TEXT("ar.DrawDebug"), false, TEXT("Enable drawing debug objects"), ECVF_Cheat);
+
 // Sets default values for this component's properties
 UARInteractionComponent::UARInteractionComponent()
 {
@@ -17,6 +19,8 @@ UARInteractionComponent::UARInteractionComponent()
 
 void UARInteractionComponent::PrimaryInteract()
 {
+	bool bDrawDebug = CVarDrawDebug.GetValueOnGameThread();
+	
 	TArray<FHitResult> HitResults;
 	
 	FCollisionObjectQueryParams ObjectQueryParams;
@@ -43,7 +47,10 @@ void UARInteractionComponent::PrimaryInteract()
 
 		if (HitActor)
 		{
-			DrawDebugSphere(GetWorld(), HitResult.Location, radius, 10, HitColor, false, 2.f);
+			if (bDrawDebug)
+			{
+				DrawDebugSphere(GetWorld(), HitResult.Location, radius, 10, HitColor, false, 2.f);
+			}
 			
 			if (HitActor->Implements<UARGameplayInterface>())
 			{
@@ -55,7 +62,10 @@ void UARInteractionComponent::PrimaryInteract()
 		}
 	}
 
-	DrawDebugLine(GetWorld(), EyeLocation, End, HitColor, false, 2.f, 0, 2.f);
+	if (bDrawDebug)
+	{
+		DrawDebugLine(GetWorld(), EyeLocation, End, HitColor, false, 2.f, 0, 2.f);	
+	}
 }
 
 

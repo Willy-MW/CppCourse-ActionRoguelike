@@ -3,6 +3,10 @@
 
 #include "ARAttributeComponent.h"
 
+#include "ARGameModeBase.h"
+
+static TAutoConsoleVariable<float> CVarDamageMultiplier(TEXT("ar.DamageMultiplier"), 1.0f, TEXT("Global Damage Modifier for Attribute Component."), ECVF_Cheat);
+
 UARAttributeComponent* UARAttributeComponent::GetAttributes(AActor* FromActor)
 {
 	if (FromActor)
@@ -53,22 +57,36 @@ bool UARAttributeComponent::Kill(AActor* InstigatorActor)
 
 bool UARAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float DeltaHealth)
 {
-	if (!GetOwner()->CanBeDamaged())
+	if (!GetOwner()->CanBeDamaged() && DeltaHealth < 0.0f)
 	{
 		return false;
 	}
-	
-	float NewHealth = FMath::Clamp(Health + DeltaHealth, 0, MaxHealth);
 
-	if (NewHealth != Health)
+	if (DeltaHealth < 0.0f)
 	{
-		Health = NewHealth;
-		OnHealthChanged.Broadcast(InstigatorActor, this, Health, DeltaHealth);
-	
-		return true;
+		float DamageMultiplier = CVarDamageMultiplier.GetValueOnGameThread();
+
+		DeltaHealth *= DamageMultiplier;
 	}
 
-	return false;
+	const float OldHealth = Health;
+
+	Health = FMath::Clamp(Health + DeltaHealth, 0, MaxHealth);
+
+	const float ActualDelta = Health - OldHealth;
+	OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
+
+	if (ActualDelta < 0.f && Health == 0.f)
+	{
+		AARGameModeBase* GM = GetWorld()->GetAuthGameMode<AARGameModeBase>();
+
+		if (GM)
+		{
+			GM->OnActorKilled(GetOwner(), InstigatorActor);
+		}
+	}
+
+	return ActualDelta != 0;
 }
 
 bool UARAttributeComponent::IsAlive() const

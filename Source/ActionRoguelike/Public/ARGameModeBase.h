@@ -35,8 +35,13 @@ protected:
 
 	UFUNCTION()
 	void SpawnBotTimerElapsed();
-	
+
+	UFUNCTION()
+	void RespawnPlayerElapsed(AController* Controller);
 public:
+
+	virtual void OnActorKilled(AActor* KilledActor, AActor* Killer);
+	
 	virtual void StartPlay() override;
 
 	UFUNCTION(Exec)
