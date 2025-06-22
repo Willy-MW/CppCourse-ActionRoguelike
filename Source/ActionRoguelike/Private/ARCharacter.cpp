@@ -3,6 +3,7 @@
 
 #include "ActionRoguelike/Public/ARCharacter.h"
 
+#include "ARActionComponent.h"
 #include "ARAttributeComponent.h"
 #include "ARInteractionComponent.h"
 #include "ARMagicProjectile.h"
@@ -30,7 +31,8 @@ AARCharacter::AARCharacter()
 
 	InteractionComp = CreateDefaultSubobject<UARInteractionComponent>(TEXT("InteractionComp"));
 	AttributeComp = CreateDefaultSubobject<UARAttributeComponent>(TEXT("AttributeComp"));
-
+	ActionComp = CreateDefaultSubobject<UARActionComponent>(TEXT("ActionComp"));
+	
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	bUseControllerRotationYaw = false;
@@ -63,6 +65,18 @@ void AARCharacter::Look(const FInputActionInstance& Instance)
 
 	AddControllerYawInput(LookVector.X);
 	AddControllerPitchInput(-LookVector.Y);
+}
+
+void AARCharacter::SprintStart()
+{
+	UE_LOG(LogTemp, Display, TEXT("Sprinting start"));
+	ActionComp->StartActionByName(this,"Sprint");
+}
+
+void AARCharacter::SprintEnd()
+{
+	UE_LOG(LogTemp, Display, TEXT("Sprinting end"));
+	ActionComp->StopActionByName(this,"Sprint");
 }
 
 void AARCharacter::Attack_TimeElapsed(const TSubclassOf<AActor>& Projectile)
@@ -191,6 +205,10 @@ void AARCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 		// Look
 		EnhancedInputComponent->BindAction(LookAction.Get(), ETriggerEvent::Triggered, this, &AARCharacter::Look);
+
+		// Sprinting
+		EnhancedInputComponent->BindAction(SprintAction.Get(), ETriggerEvent::Started, this, &AARCharacter::SprintStart);
+		EnhancedInputComponent->BindAction(SprintAction.Get(), ETriggerEvent::Completed, this, &AARCharacter::SprintEnd);
 
 		// Primary attack
 		EnhancedInputComponent->BindAction(PrimaryAttackAction.Get(), ETriggerEvent::Started, this, &AARCharacter::PrimaryAttack);

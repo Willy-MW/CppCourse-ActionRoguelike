@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "ARCharacter.generated.h"
 
+class UARActionComponent;
 class UARAttributeComponent;
 class UARInteractionComponent;
 struct FInputActionInstance;
@@ -31,6 +32,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category="Input")
 	TObjectPtr<UInputAction> LookAction;
+
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	TObjectPtr<UInputAction> SprintAction;
 	
 	UPROPERTY(EditDefaultsOnly, Category="Input")
 	TObjectPtr<UInputAction> PrimaryAttackAction;
@@ -76,6 +80,9 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UARInteractionComponent> InteractionComp;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	TObjectPtr<UARActionComponent> ActionComp;
+
 	FTimerHandle TimerHandle_Attack;
 	
 	// Called when the game starts or when spawned
@@ -84,6 +91,10 @@ protected:
 	void Move(const FInputActionInstance& Instance);
 
 	void Look(const FInputActionInstance& Instance);
+
+	void SprintStart();
+
+	void SprintEnd();
 
 	UFUNCTION()
 	void Attack_TimeElapsed(const TSubclassOf<AActor>& Projectile);
