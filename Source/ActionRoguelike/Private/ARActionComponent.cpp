@@ -57,6 +57,11 @@ bool UARActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 void UARActionComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	for (auto ActionClass : DefaultActions)
+	{
+		AddAction(ActionClass);
+	}
 }
 
 

@@ -79,49 +79,19 @@ void AARCharacter::SprintEnd()
 	ActionComp->StopActionByName(this,"Sprint");
 }
 
-void AARCharacter::Attack_TimeElapsed(const TSubclassOf<AActor>& Projectile)
-{
-	FVector SpawnLocation = GetMesh()->GetSocketLocation("Muzzle_01");
-	FVector TargetLocation = PerformLineTraceFromCamera();
-	FTransform SpawnTransform = FTransform(UKismetMathLibrary::FindLookAtRotation(SpawnLocation, TargetLocation), SpawnLocation);
-	
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	SpawnParams.Instigator = this;
-
-	GetWorld()->SpawnActor<AActor>(Projectile, SpawnTransform, SpawnParams);
-	
-	if (CastEffect) UGameplayStatics::SpawnEmitterAttached(CastEffect, GetMesh(), "Muzzle_01");
-}
-
 void AARCharacter::PrimaryAttack()
 {
-	PlayAnimMontage(AttackAnim);
-
-	FTimerDelegate TimerDelegate;
-	TimerDelegate.BindUFunction(this, FName("Attack_TimeElapsed"), PrimaryAttackClass);
-
-	GetWorldTimerManager().SetTimer(TimerHandle_Attack, TimerDelegate, 0.2f, false);
+	ActionComp->StartActionByName(this, "PrimaryAttack");
 }
 
 void AARCharacter::SecondaryAttack()
 {
-	PlayAnimMontage(AttackAnim);
-
-	FTimerDelegate TimerDelegate;
-	TimerDelegate.BindUFunction(this, FName("Attack_TimeElapsed"), SecondaryAttackClass);
-
-	GetWorldTimerManager().SetTimer(TimerHandle_Attack, TimerDelegate, 0.2f, false);
+	ActionComp->StartActionByName(this, "SecondaryAttack");
 }
 
 void AARCharacter::DashAttack()
 {
-	PlayAnimMontage(AttackAnim);
-
-	FTimerDelegate TimerDelegate;
-	TimerDelegate.BindUFunction(this, FName("Attack_TimeElapsed"), DashAttackClass);
-
-	GetWorldTimerManager().SetTimer(TimerHandle_Attack, TimerDelegate, 0.2f, false);
+	ActionComp->StartActionByName(this, "DashAttack");
 }
 
 void AARCharacter::PrimaryInteract()

@@ -21,4 +21,6 @@ class ACTIONROGUELIKE_API UARAction : public UObject
 	
 	UFUNCTION(BlueprintNativeEvent, Category="Action")
 	void StopAction(AActor* Instigator);
+
+	UWorld* GetWorld() const override;
 };

@@ -56,21 +56,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	TObjectPtr<UARAttributeComponent> AttributeComp;
 
-	UPROPERTY(EditAnywhere, Category="Attack")
-	TSubclassOf<AActor> PrimaryAttackClass;
-
-	UPROPERTY(EditAnywhere, Category="Attack")
-	TSubclassOf<AActor> SecondaryAttackClass;
-
-	UPROPERTY(EditAnywhere, Category="Attack")
-	TSubclassOf<AActor> DashAttackClass;
-	
-	UPROPERTY(EditAnywhere, Category="Attack")
-	TObjectPtr<UAnimMontage> AttackAnim;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Attack")
-	TObjectPtr<UParticleSystem> CastEffect;
-
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArm;
 
@@ -82,8 +67,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	TObjectPtr<UARActionComponent> ActionComp;
-
-	FTimerHandle TimerHandle_Attack;
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -95,9 +78,6 @@ protected:
 	void SprintStart();
 
 	void SprintEnd();
-
-	UFUNCTION()
-	void Attack_TimeElapsed(const TSubclassOf<AActor>& Projectile);
 	
 	void PrimaryAttack();
 	
@@ -106,8 +86,6 @@ protected:
 	void DashAttack();
 
 	void PrimaryInteract();
-
-	FVector PerformLineTraceFromCamera() const;
 
 	UFUNCTION()
 	void OnHealthChanged(AActor* InstigatorActor, UARAttributeComponent* OwningComp, float NewHealth, float DeltaHealth);
@@ -123,4 +101,6 @@ public:
 
 	UFUNCTION(Exec)
 	void HealSelf(float Amount = 100.f);
+
+	FVector PerformLineTraceFromCamera() const;
 };
