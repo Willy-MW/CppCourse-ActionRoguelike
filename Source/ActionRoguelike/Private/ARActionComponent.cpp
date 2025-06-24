@@ -29,11 +29,18 @@ bool UARActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 {
 	for (UARAction* Action : Actions)
 	{
-		if (Action && Action->ActionName == ActionName)
+		if (!(Action && Action->ActionName == ActionName))
 		{
-			Action->StartAction(Instigator);
-			return true;
+			continue;
 		}
+
+		if (!Action->CanStart(Instigator))
+		{
+			continue;
+		}
+		
+		Action->StartAction(Instigator);
+		return true;
 	}
 
 	return false;
@@ -43,11 +50,18 @@ bool UARActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 {
 	for (UARAction* Action : Actions)
 	{
-		if (Action && Action->ActionName == ActionName)
+		if (!(Action && Action->ActionName == ActionName))
 		{
-			Action->StopAction(Instigator);
-			return true;
+			continue;
 		}
+
+		if (!Action->IsRunning())
+		{
+			continue;
+		}
+
+		Action->StopAction(Instigator);
+		return true;
 	}
 
 	return false;
@@ -70,5 +84,8 @@ void UARActionComponent::TickComponent(float DeltaTime, ELevelTick TickType,
                                        FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	FString DebugMsg = GetNameSafe(GetOwner()) + ": " + ActiveGameplayTags.ToStringSimple();
+	GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::White, DebugMsg);
 }
 
