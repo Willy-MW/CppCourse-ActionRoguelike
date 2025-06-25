@@ -3,7 +3,7 @@
 
 #include "ARMagicProjectile.h"
 
-#include "ARAttributeComponent.h"
+#include "ARActionComponent.h"
 #include "ARGameplayFunctionLibrary.h"
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
@@ -61,14 +61,15 @@ void AARMagicProjectile::OnActorOverlap_Implementation(UPrimitiveComponent* Over
 {
 	if (Actor && Actor != GetInstigator())
 	{
-		// UARAttributeComponent* AttributeComponent = Actor->FindComponentByClass<UARAttributeComponent>();
-		// if (AttributeComponent)
-		// {
-		// 	AttributeComponent->ApplyHealthChange(GetInstigator(), -Damage);
-		// }
-		//
-		// Explode();
+		UARActionComponent* ActionComp = Actor->FindComponentByClass<UARActionComponent>();
+		if (ActionComp && ActionComp->ActiveGameplayTags.HasTag(ParryTag))
+		{
+			ProjectileMovementComp->Velocity = -ProjectileMovementComp->Velocity;
 
+			SetInstigator(Cast<APawn>(Actor));
+			return;
+		}
+		
 		UARGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), Actor, Damage, SweepResult);
 
 		Explode();

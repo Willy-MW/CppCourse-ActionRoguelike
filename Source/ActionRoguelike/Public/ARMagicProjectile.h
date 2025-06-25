@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "GameFramework/Actor.h"
 #include "ARMagicProjectile.generated.h"
 
@@ -53,6 +54,9 @@ public:
 	AARMagicProjectile();
 
 protected:
+
+	UPROPERTY(EditDefaultsOnly, Category="Damage")
+	FGameplayTag ParryTag;
 
 	virtual void PostInitializeComponents() override;
 
