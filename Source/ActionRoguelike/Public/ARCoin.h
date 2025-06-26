@@ -4,22 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "ARPickUp.h"
-#include "ARHealthPotion.generated.h"
+#include "ARCoin.generated.h"
 
 UCLASS()
-class ACTIONROGUELIKE_API AARHealthPotion : public AARPickUp
+class ACTIONROGUELIKE_API AARCoin : public AARPickUp
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this actor's properties
-	AARHealthPotion();
+	AARCoin();
 
-	UPROPERTY(EditAnywhere)
-	float HealingAmount;
-
-	UPROPERTY(EditAnywhere)
-	int32 CreditCost;
+	UPROPERTY(EditAnywhere);
+	int32 CreditsGain;
 
 protected:
 	void ApplyEffect_Implementation(APawn* Pawn) override;

@@ -30,6 +30,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	TSubclassOf<AActor> MinionClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Credits")
+	int32 BotKilledCredits;
+
 	UFUNCTION()
 	void OnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
 
@@ -39,6 +42,8 @@ protected:
 	UFUNCTION()
 	void RespawnPlayerElapsed(AController* Controller);
 public:
+
+	AARGameModeBase();
 
 	virtual void OnActorKilled(AActor* KilledActor, AActor* Killer);
 	

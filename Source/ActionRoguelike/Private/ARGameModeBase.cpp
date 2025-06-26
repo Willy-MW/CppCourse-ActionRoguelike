@@ -5,11 +5,18 @@
 
 #include "ARAttributeComponent.h"
 #include "ARCharacter.h"
+#include "ARPlayerState.h"
 #include "EngineUtils.h"
 #include "AI/ARAICharacter.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("ar.SpawnBots"), true, TEXT("Enable spawning of bots via timer"), ECVF_Cheat);
+
+AARGameModeBase::AARGameModeBase()
+{
+	SpawnTimerInterval = 2.f;
+	BotKilledCredits = 30;	
+}
 
 void AARGameModeBase::OnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance,
                                       EEnvQueryStatus::Type QueryStatus)
@@ -92,6 +99,24 @@ void AARGameModeBase::OnActorKilled(AActor* KilledActor, AActor* Killer)
 
 		float RespawnDelay = 2.f;
 		GetWorldTimerManager().SetTimer(TimerHandle_RespawnDelay, TimerDelegate, RespawnDelay, false);
+
+		return;
+	}
+
+	AARAICharacter* Bot = Cast<AARAICharacter>(KilledActor);
+	Player = Cast<AARCharacter>(Killer);
+
+	if (Bot && Player)
+	{
+		AARPlayerState* PS = Cast<AARPlayerState>( Player->GetPlayerState());
+
+		if (!PS)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("PlayerState is not valid ARPLayerState class."));
+			return;
+		}
+
+		PS->AddCredits(BotKilledCredits);
 	}
 }
 
