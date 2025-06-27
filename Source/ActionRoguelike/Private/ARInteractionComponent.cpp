@@ -4,27 +4,42 @@
 #include "ARInteractionComponent.h"
 
 #include "ARGameplayInterface.h"
+#include "ARWorldUserWidget.h"
+#include "Blueprint/UserWidget.h"
 
 static TAutoConsoleVariable<bool> CVarDrawDebug(TEXT("ar.DrawDebug"), false, TEXT("Enable drawing debug objects"), ECVF_Cheat);
 
-// Sets default values for this component's properties
 UARInteractionComponent::UARInteractionComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
+	TraceRadius = 30.f;
+	TraceDistance = 1000.f;
+	CollisionChannel = ECC_WorldDynamic;
+	
 }
 
 void UARInteractionComponent::PrimaryInteract()
+{
+	if (FocusedActor == nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, "No FocusedActor to interact");
+		return;
+	}
+	
+	APawn* InteractingPawn = Cast<APawn>(GetOwner());
+		
+	IARGameplayInterface::Execute_Interact(FocusedActor, InteractingPawn);
+}
+
+void UARInteractionComponent::FindBestInteractable()
 {
 	bool bDrawDebug = CVarDrawDebug.GetValueOnGameThread();
 	
 	TArray<FHitResult> HitResults;
 	
 	FCollisionObjectQueryParams ObjectQueryParams;
-	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+	ObjectQueryParams.AddObjectTypesToQuery(CollisionChannel);
 
 	AActor* InteractingActor = GetOwner();
 
@@ -32,14 +47,15 @@ void UARInteractionComponent::PrimaryInteract()
 	FRotator EyeRotation;
 	InteractingActor->GetActorEyesViewPoint(EyeLocation, EyeRotation);
 
-	FVector End = EyeLocation + EyeRotation.Vector() * 1000.f;
+	FVector End = EyeLocation + EyeRotation.Vector() * TraceDistance;
 
-	float radius = 30.f;
 	FCollisionShape Shape;
-	Shape.SetSphere(radius);
+	Shape.SetSphere(TraceRadius);
 	
 	bool bBlockingHit = GetWorld()->SweepMultiByObjectType(HitResults, EyeLocation, End, FQuat::Identity, ObjectQueryParams, Shape);
 	FColor HitColor = bBlockingHit ? FColor::Green : FColor::Red;
+
+	FocusedActor = nullptr;
 	
 	for (FHitResult& HitResult : HitResults)
 	{
@@ -49,16 +65,38 @@ void UARInteractionComponent::PrimaryInteract()
 		{
 			if (bDrawDebug)
 			{
-				DrawDebugSphere(GetWorld(), HitResult.Location, radius, 10, HitColor, false, 2.f);
+				DrawDebugSphere(GetWorld(), HitResult.Location, TraceRadius, 10, HitColor, false, 2.f);
 			}
 			
 			if (HitActor->Implements<UARGameplayInterface>())
 			{
-				APawn* InteractingPawn = Cast<APawn>(InteractingActor);
-		
-				IARGameplayInterface::Execute_Interact(HitActor, InteractingPawn);
+				FocusedActor = HitActor;
 				break;
 			}
+		}
+	}
+
+	if (FocusedActor)
+	{
+		if (DefaultWidgetInstance == nullptr && ensure(DefaultWidgetClass))
+		{
+			DefaultWidgetInstance = CreateWidget<UARWorldUserWidget>(GetWorld(), DefaultWidgetClass);	
+		}
+
+		if (DefaultWidgetInstance)
+		{
+			DefaultWidgetInstance->AttachedActor = FocusedActor;
+
+			if (!DefaultWidgetInstance->IsInViewport())
+			{
+				DefaultWidgetInstance->AddToViewport();	
+			}
+		}
+	} else
+	{
+		if (DefaultWidgetInstance)
+		{
+			DefaultWidgetInstance->RemoveFromParent();
 		}
 	}
 
@@ -68,22 +106,11 @@ void UARInteractionComponent::PrimaryInteract()
 	}
 }
 
-
-// Called when the game starts
-void UARInteractionComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
-	// ...
-	
-}
-
-
-// Called every frame
-void UARInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UARInteractionComponent::TickComponent(float DeltaTime, enum ELevelTick TickType,
+	FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
+	FindBestInteractable();
 }
 

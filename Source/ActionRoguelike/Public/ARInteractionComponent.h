@@ -7,6 +7,8 @@
 #include "ARInteractionComponent.generated.h"
 
 
+class UARWorldUserWidget;
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ACTIONROGUELIKE_API UARInteractionComponent : public UActorComponent
 {
@@ -19,12 +21,25 @@ public:
 	void PrimaryInteract();
 
 protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
+	void FindBestInteractable();
 
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	UPROPERTY()
+	AActor* FocusedActor;
 
-		
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UARWorldUserWidget> DefaultWidgetClass;
+
+	UPROPERTY()
+	UARWorldUserWidget* DefaultWidgetInstance;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Trace")
+	float TraceDistance;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Trace")
+	float TraceRadius;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Trace")
+	TEnumAsByte<ECollisionChannel> CollisionChannel;
+
+	void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 };
