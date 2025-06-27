@@ -73,6 +73,11 @@ void AARMagicProjectile::OnActorOverlap_Implementation(UPrimitiveComponent* Over
 		UARGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), Actor, Damage, SweepResult);
 
 		Explode();
+
+		if (ActionComp)
+		{
+			ActionComp->AddAction(GetInstigator(), BurningActionClass);
+		}
 	}
 }
 

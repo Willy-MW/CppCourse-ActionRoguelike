@@ -15,6 +15,9 @@ class ACTIONROGUELIKE_API UARAction : public UObject
 
 public:
 	UPROPERTY(EditDefaultsOnly, Category="Action")
+	bool bAutoStart;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Action")
 	FName ActionName;
 
 	UFUNCTION(BlueprintNativeEvent, Category="Action")

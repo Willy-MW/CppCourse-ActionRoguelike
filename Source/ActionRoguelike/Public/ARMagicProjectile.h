@@ -3,8 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ARAction.h"
 #include "GameplayTagContainer.h"
 #include "GameFramework/Actor.h"
+#include "Runtime/AdpcmAudioDecoder/Module/Public/Decoders/ADPCMAudioInfo.h"
 #include "ARMagicProjectile.generated.h"
 
 class UProjectileMovementComponent;
@@ -45,6 +47,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Damage")
 	float Damage;
+
+	UPROPERTY(EditDefaultsOnly, Category="Damage")
+	TSubclassOf<UARAction> BurningActionClass;
 
 public:
 	UFUNCTION(BlueprintNativeEvent)

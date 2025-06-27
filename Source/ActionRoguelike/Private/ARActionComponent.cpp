@@ -11,7 +11,7 @@ UARActionComponent::UARActionComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-void UARActionComponent::AddAction(TSubclassOf<UARAction> ActionClass)
+void UARActionComponent::AddAction(AActor* Instigator, TSubclassOf<UARAction> ActionClass)
 {
 	if (!ensure(ActionClass))
 	{
@@ -22,7 +22,22 @@ void UARActionComponent::AddAction(TSubclassOf<UARAction> ActionClass)
 	if (ensure(NewAction))
 	{
 		Actions.Add(NewAction);
+
+		if (NewAction->bAutoStart && ensure(NewAction->CanStart(Instigator)))
+		{
+			NewAction->StartAction(Instigator);
+		}
 	}
+}
+
+void UARActionComponent::RemoveAction(UARAction* Action)
+{
+	if (!ensure(Action && !Action->IsRunning()))
+	{
+		return;
+	}
+	
+	Actions.Remove(Action);
 }
 
 bool UARActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
@@ -74,7 +89,7 @@ void UARActionComponent::BeginPlay()
 
 	for (auto ActionClass : DefaultActions)
 	{
-		AddAction(ActionClass);
+		AddAction(GetOwner(), ActionClass);
 	}
 }
 

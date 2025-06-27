@@ -16,7 +16,7 @@ AARHealthPotion::AARHealthPotion()
 
 void AARHealthPotion::ApplyEffect_Implementation(APawn* Pawn)
 {
-	AARPlayerState* PS = Cast<AARPlayerState>(Pawn->GetPlayerState());
+	AARPlayerState* PS = Pawn->GetPlayerState<AARPlayerState>();
 
 	if (!PS)
 	{
