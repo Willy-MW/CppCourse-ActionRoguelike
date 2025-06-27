@@ -6,7 +6,6 @@
 #include "ARAction.h"
 #include "GameplayTagContainer.h"
 #include "GameFramework/Actor.h"
-#include "Runtime/AdpcmAudioDecoder/Module/Public/Decoders/ADPCMAudioInfo.h"
 #include "ARMagicProjectile.generated.h"
 
 class UProjectileMovementComponent;
@@ -37,7 +36,7 @@ protected:
 	TObjectPtr<USoundBase> ImpactSound;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Visuals|CameraShake")
-	TSubclassOf<class UCameraShakeBase> CameraShake;
+	TSubclassOf<UCameraShakeBase> CameraShake;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Visuals|CameraShake")
 	float CameraShakeInnerRadius;
