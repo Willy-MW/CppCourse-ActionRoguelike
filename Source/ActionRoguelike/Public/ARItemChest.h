@@ -17,22 +17,23 @@ public:
 	AARItemChest();
 
 	UPROPERTY(EditAnywhere)
-	float targetPitch;
+	float TargetPitch;
 
 	void Interact_Implementation(APawn* InteractingPawn) override;
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+
+	UPROPERTY(ReplicatedUsing="OnRep_LidOpened")
+	bool bLidOpen;
+
+	UFUNCTION()
+	void OnRep_LidOpened();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	TObjectPtr<UStaticMeshComponent> BaseMeshComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	TObjectPtr<UStaticMeshComponent> LidMeshComp;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	
 
 };

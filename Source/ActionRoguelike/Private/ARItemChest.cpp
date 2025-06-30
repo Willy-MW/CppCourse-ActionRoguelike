@@ -3,6 +3,8 @@
 
 #include "ARItemChest.h"
 
+#include "Net/UnrealNetwork.h"
+
 // Sets default values
 AARItemChest::AARItemChest()
 {
@@ -15,25 +17,27 @@ AARItemChest::AARItemChest()
 	LidMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LidMeshComp"));
 	LidMeshComp->SetupAttachment(BaseMeshComp);
 
-	targetPitch = 110.f;
+	TargetPitch = 110.f;
+
+	SetReplicates(true);
 }
 
 void AARItemChest::Interact_Implementation(APawn* InteractingPawn)
 {
-	LidMeshComp->SetRelativeRotation(FRotator(targetPitch, 0.f, 0.f));
+	bLidOpen = !bLidOpen;
+	OnRep_LidOpened();
 }
 
-// Called when the game starts or when spawned
-void AARItemChest::BeginPlay()
+void AARItemChest::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
-	Super::BeginPlay();
-	
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AARItemChest, bLidOpen);
 }
 
-// Called every frame
-void AARItemChest::Tick(float DeltaTime)
+void AARItemChest::OnRep_LidOpened()
 {
-	Super::Tick(DeltaTime);
-
+	float CurrentPitch = bLidOpen ? TargetPitch : 0;
+	LidMeshComp->SetRelativeRotation(FRotator(CurrentPitch, 0.f, 0.f));
 }
 
