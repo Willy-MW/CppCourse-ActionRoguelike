@@ -15,6 +15,8 @@ AARPickUp::AARPickUp()
 	RootComponent = MeshComp;
 	
 	RespawnTime = 10.f;
+
+	SetReplicates(true);
 }
 
 void AARPickUp::SetEnabled_Implementation(bool bEnabled)

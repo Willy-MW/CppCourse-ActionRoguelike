@@ -34,6 +34,8 @@ AARMagicProjectile::AARMagicProjectile()
 	AudioComp->SetupAttachment(CollisionComp);
 
 	Damage = 20.f;
+
+	SetReplicates(true);
 }
 
 void AARMagicProjectile::PostInitializeComponents()
