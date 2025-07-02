@@ -8,6 +8,8 @@
 UARActionEffect::UARActionEffect()
 {
 	bAutoStart = true;
+	Duration = 0.f;
+	Period = 0.f;
 }
 
 void UARActionEffect::StartAction_Implementation(AActor* Instigator)
@@ -22,7 +24,7 @@ void UARActionEffect::StartAction_Implementation(AActor* Instigator)
 		GetWorld()->GetTimerManager().SetTimer(DurationHandle, TimerDelegate, Duration, false);
 	}
 
-	if (Period >0.f)
+	if (Period > 0.f)
 	{
 		FTimerDelegate TimerDelegate;
 		TimerDelegate.BindUFunction(this, "ExecutePeriodicEffect", Instigator);
