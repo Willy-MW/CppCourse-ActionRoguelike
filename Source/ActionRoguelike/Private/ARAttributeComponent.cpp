@@ -14,6 +14,9 @@ UARAttributeComponent::UARAttributeComponent()
 	MaxHealth = 100.f;
 	Health = MaxHealth;
 
+	MaxRage = 100.f;
+	Rage = 0.f;
+
 	SetIsReplicatedByDefault(true);
 }
 
@@ -51,6 +54,21 @@ float UARAttributeComponent::GetMaxHealth() const
 float UARAttributeComponent::GetHealthPercent() const
 {
 	return Health / MaxHealth;
+}
+
+float UARAttributeComponent::GetRage() const
+{
+	return Rage;
+}
+
+float UARAttributeComponent::GetMaxRage() const
+{
+	return MaxRage;
+}
+
+float UARAttributeComponent::GetRagePercent() const
+{
+	return Rage / MaxRage;
 }
 
 bool UARAttributeComponent::Kill(AActor* InstigatorActor)
@@ -96,6 +114,26 @@ bool UARAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Del
 	}
 
 	return ActualDelta != 0;
+}
+
+bool UARAttributeComponent::ApplyRageChange(float DeltaRage)
+{
+	if (DeltaRage == 0.0f)
+	{
+		return false;
+	}
+
+	const float OldRage = Rage;
+	Rage = FMath::Clamp(Rage + DeltaRage, 0, MaxRage);
+	const float ActualDelta = Rage - OldRage;
+
+	if (ActualDelta == 0.0f)
+	{
+		return false;
+	}
+
+	OnRageChanged.Broadcast(this, Rage, ActualDelta);
+	return true;
 }
 
 bool UARAttributeComponent::IsAlive() const

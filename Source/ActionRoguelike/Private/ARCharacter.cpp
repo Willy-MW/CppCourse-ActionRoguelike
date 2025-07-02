@@ -128,7 +128,11 @@ void AARCharacter::OnHealthChanged(AActor* InstigatorActor, UARAttributeComponen
 {
 	if (DeltaHealth < 0.f)
 	{
-		GetMesh()->SetScalarParameterValueOnMaterials("TimeOfHit", GetWorld()->TimeSeconds);	
+		GetMesh()->SetScalarParameterValueOnMaterials("TimeOfHit", GetWorld()->TimeSeconds);
+
+		// 100% of damage received added to Rage attribute
+		float RageToAdd = DeltaHealth * -1;
+		OwningComp->ApplyRageChange(RageToAdd);
 	}
 	
 	if (DeltaHealth < 0.f && NewHealth <= 0.f)
