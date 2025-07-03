@@ -89,6 +89,24 @@ bool UARActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 	return false;
 }
 
+bool UARActionComponent::HasAction(const TSubclassOf<UARAction>& ActionClass)
+{
+	if (!ActionClass)
+	{
+		return false;
+	}
+
+	for (const UARAction* Action : Actions)
+	{
+		if (Action && Action->IsA(ActionClass))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 void UARActionComponent::ServerStartAction_Implementation(AActor* Instigator, FName ActionName)
 {
 	StartActionByName(Instigator, ActionName);

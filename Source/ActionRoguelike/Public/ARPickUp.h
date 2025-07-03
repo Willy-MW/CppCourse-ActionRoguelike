@@ -18,7 +18,7 @@ public:
 	// Sets default values for this actor's properties
 	AARPickUp();
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="PickUp")
 	float RespawnTime;
 
 	UFUNCTION(BlueprintNativeEvent)

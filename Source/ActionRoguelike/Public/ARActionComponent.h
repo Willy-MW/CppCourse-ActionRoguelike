@@ -33,6 +33,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category="Actions")
 	bool StopActionByName(AActor* Instigator, FName ActionName);
+
+	UFUNCTION(BlueprintCallable, Category="Actions")
+	bool HasAction(const TSubclassOf<UARAction>& ActionClass);
 	
 protected:
 

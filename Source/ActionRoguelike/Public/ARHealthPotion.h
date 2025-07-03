@@ -15,10 +15,10 @@ public:
 	// Sets default values for this actor's properties
 	AARHealthPotion();
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="PickUp")
 	float HealingAmount;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="PickUp")
 	int32 CreditCost;
 
 protected:

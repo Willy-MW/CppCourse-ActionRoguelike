@@ -41,8 +41,19 @@ void AARAICharacter::SetTarget(AActor* Target)
 {
 	if (AAIController* AIC = Cast<AAIController>(GetController()))
 	{
-		AIC->GetBlackboardComponent()->SetValueAsObject("TargetActor", Target);;
-		DrawDebugString(GetWorld(), GetActorLocation(), "PLAYER SPOTTED", nullptr, FColor::White, 4.f, true);
+
+		UObject* PreviousTarget = AIC->GetBlackboardComponent()->GetValueAsObject("TargetActor");
+		if (PreviousTarget != Target)
+		{
+			AIC->GetBlackboardComponent()->SetValueAsObject("TargetActor", Target);
+
+			UARWorldUserWidget* PlayerSpottedWidget = CreateWidget<UARWorldUserWidget>(GetWorld(), PlayerSpottedWidgetClass);
+			if (PlayerSpottedWidget)
+			{
+				PlayerSpottedWidget->AttachedActor = this;
+				PlayerSpottedWidget->AddToViewport();
+			}
+		}
 	}
 }
 
