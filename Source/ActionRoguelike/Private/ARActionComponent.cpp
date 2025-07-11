@@ -4,6 +4,7 @@
 #include "ARActionComponent.h"
 
 #include "ARAction.h"
+#include "ActionRoguelike/ActionRoguelike.h"
 
 
 UARActionComponent::UARActionComponent()
@@ -38,7 +39,7 @@ void UARActionComponent::RemoveAction(UARAction* Action)
 	{
 		return;
 	}
-	
+
 	Actions.Remove(Action);
 }
 
@@ -58,9 +59,9 @@ bool UARActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 
 		if (!GetOwner()->HasAuthority())
 		{
-			ServerStartAction(Instigator, ActionName);	
+			ServerStartAction(Instigator, ActionName);
 		}
-		
+
 		Action->StartAction(Instigator);
 		return true;
 	}
@@ -130,7 +131,19 @@ void UARActionComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	FString DebugMsg = GetNameSafe(GetOwner()) + ": " + ActiveGameplayTags.ToStringSimple();
-	GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::White, DebugMsg);
-}
+	// FString DebugMsg = GetNameSafe(GetOwner()) + ": " + ActiveGameplayTags.ToStringSimple();
+	// GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::White, DebugMsg);
 
+	for (UARAction* Action : Actions)
+	{
+		FColor TextColor = Action->IsRunning() ? FColor::Blue : FColor::White;
+
+		FString ActionMsg = FString::Printf(TEXT("[%s] Action: %s : IsRunning: %s : Outer: %s"),
+		                                    *GetNameSafe(GetOwner()),
+		                                    *Action->ActionName.ToString(),
+		                                    Action->IsRunning() ? TEXT("true") : TEXT("false"),
+		                                    *GetNameSafe(GetOuter()));
+
+		LogOnScreen(this, ActionMsg, TextColor, 0.0f);
+	}
+}

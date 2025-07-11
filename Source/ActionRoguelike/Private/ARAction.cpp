@@ -4,10 +4,12 @@
 #include "ARAction.h"
 
 #include "ARActionComponent.h"
+#include "ActionRoguelike/ActionRoguelike.h"
 
 void UARAction::StartAction_Implementation(AActor* Instigator)
 {
-	UE_LOG(LogTemp, Log, TEXT("Running: %s"), *GetNameSafe(this));
+	//UE_LOG(LogTemp, Log, TEXT("Running: %s"), *GetNameSafe(this));
+	LogOnScreen(this, FString::Printf(TEXT("Started: %s"), *ActionName.ToString()), FColor::Green);
 
 	UARActionComponent* Comp = GetOwningComponent();
 	Comp->ActiveGameplayTags.AppendTags(GrantsTags);
@@ -17,7 +19,8 @@ void UARAction::StartAction_Implementation(AActor* Instigator)
 
 void UARAction::StopAction_Implementation(AActor* Instigator)
 {
-	UE_LOG(LogTemp, Log, TEXT("Stopped: %s"), *GetNameSafe(this));
+	//UE_LOG(LogTemp, Log, TEXT("Stopped: %s"), *GetNameSafe(this));
+	LogOnScreen(this, FString::Printf(TEXT("Stopped: %s"), *ActionName.ToString()), FColor::White);
 
 	ensureAlways(bIsRunning);
 
