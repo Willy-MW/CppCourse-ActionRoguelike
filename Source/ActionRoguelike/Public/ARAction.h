@@ -8,12 +8,29 @@
 #include "ARAction.generated.h"
 
 
+class UARActionComponent;
+
+USTRUCT()
+struct FActionRepData
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY()
+	bool bIsRunning;
+
+	UPROPERTY()
+	AActor* Instigator;
+};
+
 UCLASS(Blueprintable)
 class ACTIONROGUELIKE_API UARAction : public UObject
 {
 	GENERATED_BODY()
 
 public:
+	void Initialize(UARActionComponent* NewActionComponent);
+	
 	UPROPERTY(EditDefaultsOnly, Category="Action")
 	bool bAutoStart;
 	
@@ -33,8 +50,16 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Actions")
 	bool IsRunning() const;
+
+	bool IsSupportedForNetworking() const override
+	{
+		return true;
+	}
 	
 protected:
+	UPROPERTY(Replicated)
+	UARActionComponent* ActionComponent;
+	
 	UPROPERTY(EditDefaultsOnly, Category="Tag")
 	FGameplayTagContainer GrantsTags;
 	
@@ -44,5 +69,9 @@ protected:
 	UFUNCTION(BlueprintCallable, Category="Action")
 	UARActionComponent* GetOwningComponent() const;
 
-	bool bIsRunning;
+	UPROPERTY(ReplicatedUsing="OnRep_RepData")
+	FActionRepData RepData;
+
+	UFUNCTION()
+	void OnRep_RepData();
 };

@@ -5,6 +5,7 @@
 
 #include "ARActionComponent.h"
 #include "ActionRoguelike/ActionRoguelike.h"
+#include "Net/UnrealNetwork.h"
 
 void UARAction::StartAction_Implementation(AActor* Instigator)
 {
@@ -14,7 +15,8 @@ void UARAction::StartAction_Implementation(AActor* Instigator)
 	UARActionComponent* Comp = GetOwningComponent();
 	Comp->ActiveGameplayTags.AppendTags(GrantsTags);
 
-	bIsRunning = true;
+	RepData.bIsRunning = true;
+	RepData.Instigator = Instigator;
 }
 
 void UARAction::StopAction_Implementation(AActor* Instigator)
@@ -22,20 +24,26 @@ void UARAction::StopAction_Implementation(AActor* Instigator)
 	//UE_LOG(LogTemp, Log, TEXT("Stopped: %s"), *GetNameSafe(this));
 	LogOnScreen(this, FString::Printf(TEXT("Stopped: %s"), *ActionName.ToString()), FColor::White);
 
-	ensureAlways(bIsRunning);
+	//ensureAlways(bIsRunning);
 
 	UARActionComponent* Comp = GetOwningComponent();
 	Comp->ActiveGameplayTags.RemoveTags(GrantsTags);
 
-	bIsRunning = false;
+	RepData.bIsRunning = false;
+	RepData.Instigator = Instigator;
+}
+
+void UARAction::Initialize(UARActionComponent* NewActionComponent)
+{
+	NewActionComponent = NewActionComponent;
 }
 
 UWorld* UARAction::GetWorld() const
 {
-	UActorComponent* Comp = Cast<UActorComponent>(GetOuter());
-	if (Comp)
+	AActor* Actor = Cast<AActor>(GetOuter());
+	if (Actor)
 	{
-		return Comp->GetWorld();
+		return Actor->GetWorld();
 	}
 
 	return nullptr;
@@ -43,7 +51,7 @@ UWorld* UARAction::GetWorld() const
 
 bool UARAction::IsRunning() const
 {
-	return bIsRunning;
+	return RepData.bIsRunning;
 }
 
 bool UARAction::CanStart_Implementation(AActor* Instigator)
@@ -65,5 +73,25 @@ bool UARAction::CanStart_Implementation(AActor* Instigator)
 
 UARActionComponent* UARAction::GetOwningComponent() const
 {
-	return Cast<UARActionComponent>(GetOuter());
+	return ActionComponent;
+}
+
+void UARAction::OnRep_RepData()
+{
+	if (RepData.bIsRunning)
+	{
+		StartAction(RepData.Instigator);
+	}
+	else
+	{
+		StopAction(RepData.Instigator);
+	}
+}
+
+void UARAction::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UARAction, RepData);
+	DOREPLIFETIME(UARAction, ActionComponent);
 }

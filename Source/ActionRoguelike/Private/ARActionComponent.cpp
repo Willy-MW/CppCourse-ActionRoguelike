@@ -5,6 +5,8 @@
 
 #include "ARAction.h"
 #include "ActionRoguelike/ActionRoguelike.h"
+#include "Engine/ActorChannel.h"
+#include "Net/UnrealNetwork.h"
 
 
 UARActionComponent::UARActionComponent()
@@ -21,9 +23,17 @@ void UARActionComponent::AddAction(AActor* Instigator, TSubclassOf<UARAction> Ac
 		return;
 	}
 
-	UARAction* NewAction = NewObject<UARAction>(this, ActionClass);
+	if (!GetOwner()->HasAuthority())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Client attempting to add action. [Class: %s]"), *GetNameSafe(ActionClass));
+		return;
+	}
+
+	UARAction* NewAction = NewObject<UARAction>(GetOwner(), ActionClass);
 	if (ensure(NewAction))
 	{
+		NewAction->Initialize(this);
+		
 		Actions.Add(NewAction);
 
 		if (NewAction->bAutoStart && ensure(NewAction->CanStart(Instigator)))
@@ -83,6 +93,11 @@ bool UARActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 			continue;
 		}
 
+		if (!GetOwner()->HasAuthority())
+		{
+			ServerStopAction(Instigator, ActionName);
+		}
+
 		Action->StopAction(Instigator);
 		return true;
 	}
@@ -113,15 +128,38 @@ void UARActionComponent::ServerStartAction_Implementation(AActor* Instigator, FN
 	StartActionByName(Instigator, ActionName);
 }
 
+void UARActionComponent::ServerStopAction_Implementation(AActor* Instigator, FName ActionName)
+{
+	StopActionByName(Instigator, ActionName);
+}
 
 void UARActionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	for (auto ActionClass : DefaultActions)
+	if (GetOwner()->HasAuthority())
 	{
-		AddAction(GetOwner(), ActionClass);
+		for (auto ActionClass : DefaultActions)
+		{
+			AddAction(GetOwner(), ActionClass);
+		}
 	}
+
+}
+
+bool UARActionComponent::ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch,
+	FReplicationFlags* RepFlags)
+{
+	bool WroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
+	for (UARAction* Action : Actions)
+	{
+		if (Action)
+		{
+			WroteSomething |= Channel->ReplicateSubobject(Action, *Bunch, *RepFlags);
+		}
+	}
+
+	return WroteSomething;
 }
 
 
@@ -140,10 +178,17 @@ void UARActionComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 		FString ActionMsg = FString::Printf(TEXT("[%s] Action: %s : IsRunning: %s : Outer: %s"),
 		                                    *GetNameSafe(GetOwner()),
-		                                    *Action->ActionName.ToString(),
+		                                    *GetNameSafe(Action),
 		                                    Action->IsRunning() ? TEXT("true") : TEXT("false"),
-		                                    *GetNameSafe(GetOuter()));
+		                                    *GetNameSafe(Action->GetOuter()));
 
 		LogOnScreen(this, ActionMsg, TextColor, 0.0f);
 	}
+}
+
+void UARActionComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UARActionComponent, Actions);
 }

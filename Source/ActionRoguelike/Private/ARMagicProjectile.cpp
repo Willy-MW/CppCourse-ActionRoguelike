@@ -76,7 +76,7 @@ void AARMagicProjectile::OnActorOverlap_Implementation(UPrimitiveComponent* Over
 
 		Explode();
 
-		if (ActionComp)
+		if (ActionComp && HasAuthority())
 		{
 			ActionComp->AddAction(GetInstigator(), BurningActionClass);
 		}

@@ -91,28 +91,29 @@ bool UARAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Del
 	}
 
 	const float OldHealth = Health;
+	const float NewHealth = FMath::Clamp(Health + DeltaHealth, 0, MaxHealth);
+	const float ActualDelta = NewHealth - OldHealth;
 
-	Health = FMath::Clamp(Health + DeltaHealth, 0, MaxHealth);
-
-	const float ActualDelta = Health - OldHealth;
-	
-	//OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
-
-	if (ActualDelta != 0.0f)
+	if (GetOwner()->HasAuthority())
 	{
-		MulticastHealthChanged(InstigatorActor, Health, ActualDelta);	
-	}
+		Health = NewHealth;
 
-	if (ActualDelta < 0.f && Health == 0.f)
-	{
-		AARGameModeBase* GM = GetWorld()->GetAuthGameMode<AARGameModeBase>();
-
-		if (GM)
+		if (ActualDelta != 0.0f)
 		{
-			GM->OnActorKilled(GetOwner(), InstigatorActor);
+			MulticastHealthChanged(InstigatorActor, Health, ActualDelta);	
+		}
+
+		if (ActualDelta < 0.f && Health == 0.f)
+		{
+			AARGameModeBase* GM = GetWorld()->GetAuthGameMode<AARGameModeBase>();
+
+			if (GM)
+			{
+				GM->OnActorKilled(GetOwner(), InstigatorActor);
+			}
 		}
 	}
-
+	
 	return ActualDelta != 0;
 }
 

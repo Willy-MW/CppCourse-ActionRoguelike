@@ -42,15 +42,20 @@ protected:
 	UFUNCTION(Server, Reliable)
 	void ServerStartAction(AActor* Instigator, FName ActionName);
 
+	UFUNCTION(Server, Reliable)
+	void ServerStopAction(AActor* Instigator, FName ActionName);
+
 	UPROPERTY(EditAnywhere, Category="Actions")
 	TArray<TSubclassOf<UARAction> > DefaultActions;
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	TArray<UARAction*> Actions;
 	
 	virtual void BeginPlay() override;
 
 public:
+	bool ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
+	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 };
