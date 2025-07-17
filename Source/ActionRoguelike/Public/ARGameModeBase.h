@@ -7,6 +7,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "ARGameModeBase.generated.h"
 
+class UARSaveGame;
 /**
  * 
  */
@@ -33,6 +34,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Credits")
 	int32 BotKilledCredits;
 
+	FString SlotName;
+
+	UPROPERTY()
+	UARSaveGame* CurrentSaveGame;
+	
 	UFUNCTION()
 	void OnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
 
@@ -49,7 +55,16 @@ public:
 	
 	virtual void StartPlay() override;
 
+	void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
+
 	UFUNCTION(Exec)
 	void KillAllBots();
+
+	UFUNCTION(BlueprintCallable, Category = "SaveGame")
+	void WriteSaveGame();
+
+	void LoadSaveGame();
+
+	void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 	
 };

@@ -21,9 +21,11 @@ public:
 
 	void Interact_Implementation(APawn* InteractingPawn) override;
 
+	void OnActorLoaded_Implementation() override;
+
 protected:
 
-	UPROPERTY(ReplicatedUsing="OnRep_LidOpened")
+	UPROPERTY(ReplicatedUsing="OnRep_LidOpened", BlueprintReadOnly, SaveGame)
 	bool bLidOpen;
 
 	UFUNCTION()

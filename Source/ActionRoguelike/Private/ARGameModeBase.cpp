@@ -5,17 +5,24 @@
 
 #include "ARAttributeComponent.h"
 #include "ARCharacter.h"
+#include "ARGameplayInterface.h"
 #include "ARPlayerState.h"
+#include "ARSaveGame.h"
 #include "EngineUtils.h"
 #include "AI/ARAICharacter.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
+#include "GameFramework/GameStateBase.h"
+#include "Kismet/GameplayStatics.h"
+#include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("ar.SpawnBots"), true, TEXT("Enable spawning of bots via timer"), ECVF_Cheat);
 
 AARGameModeBase::AARGameModeBase()
 {
 	SpawnTimerInterval = 2.f;
-	BotKilledCredits = 30;	
+	BotKilledCredits = 30;
+
+	SlotName = "SaveGame01";
 }
 
 void AARGameModeBase::OnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance,
@@ -128,6 +135,17 @@ void AARGameModeBase::StartPlay()
 	                                SpawnTimerInterval, true);
 }
 
+void AARGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
+{
+	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
+
+	AARPlayerState* PS = NewPlayer->GetPlayerState<AARPlayerState>();
+	if (PS)
+	{
+		PS->LoadPlayerState(CurrentSaveGame);
+	}
+}
+
 void AARGameModeBase::KillAllBots()
 {
 	for (TActorIterator<AARAICharacter> It(GetWorld()); It; ++It)
@@ -140,6 +158,102 @@ void AARGameModeBase::KillAllBots()
 			AttributeComponent->Kill(this);
 		}
 	}
+}
+
+void AARGameModeBase::WriteSaveGame()
+{
+	for (int32 i =0; i<GameState->PlayerArray.Num(); i++)
+	{
+		AARPlayerState* PS = Cast<AARPlayerState>( GameState->PlayerArray[i] );
+		if (PS)
+		{
+			PS->SavePlayerState(CurrentSaveGame);
+			break;
+		}
+	}
+
+	CurrentSaveGame->SavedActors.Empty();
+
+	for (FActorIterator It(GetWorld()); It; ++It)
+	{
+		AActor* Actor = *It;
+
+		if (!Actor->Implements<UARGameplayInterface>())
+		{
+			continue;
+		}
+
+		FActorSaveData ActorData;
+		ActorData.ActorName = Actor->GetName();
+		ActorData.Transform = Actor->GetActorTransform();
+
+		FMemoryWriter MemWriter(ActorData.ByteData);
+
+		FObjectAndNameAsStringProxyArchive Ar(MemWriter, true);
+		Ar.ArIsSaveGame = true;
+		
+		Actor->Serialize(Ar);
+
+		CurrentSaveGame->SavedActors.Add(ActorData);
+	}
+	
+	UGameplayStatics::SaveGameToSlot(CurrentSaveGame, SlotName, 0);
+}
+
+void AARGameModeBase::LoadSaveGame()
+{
+	if (UGameplayStatics::DoesSaveGameExist(SlotName, 0))
+	{
+		CurrentSaveGame = Cast<UARSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName,0));
+
+		if (CurrentSaveGame == nullptr)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Failed to load save game."));
+			return;
+		}
+
+		UE_LOG(LogTemp, Log, TEXT("Loaded SaveGame Data."));
+
+		for (FActorIterator It(GetWorld()); It; ++It)
+		{
+			AActor* Actor = *It;
+
+			if (!Actor->Implements<UARGameplayInterface>())
+			{
+				continue;
+			}
+
+			for (FActorSaveData ActorData : CurrentSaveGame->SavedActors)
+			{
+				if (ActorData.ActorName == Actor->GetName())
+				{
+					Actor->SetActorTransform(ActorData.Transform);
+
+					FMemoryReader MemReader(ActorData.ByteData);
+
+					FObjectAndNameAsStringProxyArchive Ar(MemReader, true);
+					Ar.ArIsSaveGame = true;
+		
+					Actor->Serialize(Ar);
+
+					IARGameplayInterface::Execute_OnActorLoaded(Actor);
+					
+					break;
+				}
+			}
+		}
+	}
+	else
+	{
+		CurrentSaveGame = Cast<UARSaveGame>(UGameplayStatics::CreateSaveGameObject(UARSaveGame::StaticClass()));
+	}
+}
+
+void AARGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
+{
+	Super::InitGame(MapName, Options, ErrorMessage);
+
+	LoadSaveGame();
 }
 
 

@@ -28,6 +28,11 @@ void AARItemChest::Interact_Implementation(APawn* InteractingPawn)
 	OnRep_LidOpened();
 }
 
+void AARItemChest::OnActorLoaded_Implementation()
+{
+	OnRep_LidOpened();
+}
+
 void AARItemChest::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
