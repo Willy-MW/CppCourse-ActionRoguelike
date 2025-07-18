@@ -125,16 +125,20 @@ bool UARAttributeComponent::ApplyRageChange(float DeltaRage)
 	}
 
 	const float OldRage = Rage;
-	Rage = FMath::Clamp(Rage + DeltaRage, 0, MaxRage);
-	const float ActualDelta = Rage - OldRage;
+	const float NewRage = FMath::Clamp(Rage + DeltaRage, 0, MaxRage);
+	const float ActualDelta = NewRage - OldRage;
 
-	if (ActualDelta == 0.0f)
+	if (GetOwner()->HasAuthority())
 	{
-		return false;
-	}
+		Rage = NewRage;
 
-	OnRageChanged.Broadcast(this, Rage, ActualDelta);
-	return true;
+		if (ActualDelta != 0.0f)
+		{
+			MulticastRageChanged(Rage, ActualDelta);	
+		}
+	}
+	
+	return ActualDelta != 0;
 }
 
 bool UARAttributeComponent::IsAlive() const
@@ -142,8 +146,13 @@ bool UARAttributeComponent::IsAlive() const
 	return Health > 0.f;
 }
 
+void UARAttributeComponent::MulticastRageChanged_Implementation(float NewHealth, float DeltaHealth)
+{
+	OnRageChanged.Broadcast(this, Rage, DeltaHealth);
+}
+
 void UARAttributeComponent::MulticastHealthChanged_Implementation(AActor* InstigatorActor, float NewHealth,
-	float DeltaHealth)
+                                                                  float DeltaHealth)
 {
 	OnHealthChanged.Broadcast(InstigatorActor, this, NewHealth, DeltaHealth);
 }
@@ -154,4 +163,6 @@ void UARAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 
 	DOREPLIFETIME(UARAttributeComponent, Health);
 	DOREPLIFETIME(UARAttributeComponent, MaxHealth);
+	DOREPLIFETIME(UARAttributeComponent, Rage);
+	DOREPLIFETIME(UARAttributeComponent, MaxRage);
 }

@@ -16,7 +16,7 @@ class ACTIONROGUELIKE_API AARPlayerState : public APlayerState
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Category="Credits")
+	UPROPERTY(EditDefaultsOnly, Category="Credits", ReplicatedUsing="OnRep_Credits")
 	int32 Credits;
 
 public:
@@ -37,4 +37,8 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent)
 	void LoadPlayerState(UARSaveGame* SaveObject);
+
+protected:
+	UFUNCTION()
+	void OnRep_Credits(int32 OldCredits);
 };

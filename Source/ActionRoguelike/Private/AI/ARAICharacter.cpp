@@ -37,6 +37,16 @@ void AARAICharacter::PostInitializeComponents()
 	AttributeComp->OnHealthChanged.AddDynamic(this, &AARAICharacter::OnHealthChanged);
 }
 
+void AARAICharacter::MulticastOnPlayerSpotted_Implementation()
+{
+	UARWorldUserWidget* PlayerSpottedWidget = CreateWidget<UARWorldUserWidget>(GetWorld(), PlayerSpottedWidgetClass);
+	if (PlayerSpottedWidget)
+	{
+		PlayerSpottedWidget->AttachedActor = this;
+		PlayerSpottedWidget->AddToViewport();
+	}
+}
+
 void AARAICharacter::SetTarget(AActor* Target)
 {
 	if (AAIController* AIC = Cast<AAIController>(GetController()))
@@ -46,13 +56,7 @@ void AARAICharacter::SetTarget(AActor* Target)
 		if (PreviousTarget != Target)
 		{
 			AIC->GetBlackboardComponent()->SetValueAsObject("TargetActor", Target);
-
-			UARWorldUserWidget* PlayerSpottedWidget = CreateWidget<UARWorldUserWidget>(GetWorld(), PlayerSpottedWidgetClass);
-			if (PlayerSpottedWidget)
-			{
-				PlayerSpottedWidget->AttachedActor = this;
-				PlayerSpottedWidget->AddToViewport();
-			}
+			MulticastOnPlayerSpotted();
 		}
 	}
 }

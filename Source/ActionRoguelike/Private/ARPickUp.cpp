@@ -3,6 +3,8 @@
 
 #include "ARPickUp.h"
 
+#include "Net/UnrealNetwork.h"
+
 
 // Sets default values
 AARPickUp::AARPickUp()
@@ -21,6 +23,11 @@ AARPickUp::AARPickUp()
 
 void AARPickUp::SetEnabled_Implementation(bool bEnabled)
 {
+	if (HasAuthority())
+	{
+		bIsEnabled = bEnabled;
+	}
+	
 	MeshComp->SetCollisionEnabled(bEnabled ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
 	MeshComp->SetVisibility(bEnabled);
 }
@@ -28,6 +35,11 @@ void AARPickUp::SetEnabled_Implementation(bool bEnabled)
 void AARPickUp::Interact_Implementation(APawn* InteractingPawn)
 {
 	ApplyEffect(InteractingPawn);
+}
+
+void AARPickUp::OnRep_bIsEnabled()
+{
+	SetEnabled(bIsEnabled);
 }
 
 // Called when the game starts or when spawned
@@ -44,5 +56,12 @@ void AARPickUp::ApplyEffect_Implementation(APawn* Pawn)
 	TimerDelegate.BindUFunction(this, "SetEnabled", true);
 	
 	GetWorldTimerManager().SetTimer(RespawnTimer, TimerDelegate, RespawnTime, false);
+}
+
+void AARPickUp::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AARPickUp, bIsEnabled);
 }
 

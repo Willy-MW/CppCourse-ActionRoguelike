@@ -137,13 +137,13 @@ void AARGameModeBase::StartPlay()
 
 void AARGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
 {
-	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
-
 	AARPlayerState* PS = NewPlayer->GetPlayerState<AARPlayerState>();
 	if (PS)
 	{
 		PS->LoadPlayerState(CurrentSaveGame);
 	}
+
+	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
 }
 
 void AARGameModeBase::KillAllBots()

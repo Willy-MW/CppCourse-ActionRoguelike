@@ -72,4 +72,7 @@ protected:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastHealthChanged(AActor* InstigatorActor, float NewHealth, float DeltaHealth);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRageChanged(float NewHealth, float DeltaHealth);
 };

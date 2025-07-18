@@ -28,6 +28,12 @@ public:
 
 protected:
 
+	UPROPERTY(ReplicatedUsing=OnRep_bIsEnabled)
+	bool bIsEnabled;
+
+	UFUNCTION()
+	void OnRep_bIsEnabled();
+
 	FTimerHandle RespawnTimer;
 
 	UPROPERTY(EditAnywhere)

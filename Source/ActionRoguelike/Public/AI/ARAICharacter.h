@@ -38,6 +38,9 @@ protected:
 
 	virtual void PostInitializeComponents() override;
 
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastOnPlayerSpotted();
+	
 	void SetTarget(AActor* Target);
 	
 	UFUNCTION()
