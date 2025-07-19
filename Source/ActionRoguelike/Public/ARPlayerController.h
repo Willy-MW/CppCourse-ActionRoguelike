@@ -16,6 +16,17 @@ class ACTIONROGUELIKE_API AARPlayerController : public APlayerController
 
 	protected:
 
+	UPROPERTY(EditDefaultsOnly, Category="UI")
+	TSubclassOf<UUserWidget> PauseMenuClass;
+
+	UPROPERTY()
+	UUserWidget* PauseMenuInstance;
+
+	UFUNCTION(BlueprintCallable)
+	void TogglePauseMenu();
+
+	void SetupInputComponent() override;
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void BlueprintBeginPlayingState();
 	

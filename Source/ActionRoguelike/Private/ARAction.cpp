@@ -35,7 +35,7 @@ void UARAction::StopAction_Implementation(AActor* Instigator)
 
 void UARAction::Initialize(UARActionComponent* NewActionComponent)
 {
-	NewActionComponent = NewActionComponent;
+	ActionComponent = NewActionComponent;
 }
 
 UWorld* UARAction::GetWorld() const
