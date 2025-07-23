@@ -7,6 +7,7 @@
 #include "Components/ActorComponent.h"
 #include "ARActionComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnActionStateChanged, UARActionComponent*, OwningComp, UARAction*, Action);
 
 class UARAction;
 
@@ -36,7 +37,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Actions")
 	bool HasAction(const TSubclassOf<UARAction>& ActionClass);
+
+	UPROPERTY(BlueprintAssignable, Category="Actions")
+	FOnActionStateChanged OnActionStarted;
 	
+	UPROPERTY(BlueprintAssignable, Category="Actions")
+	FOnActionStateChanged OnActionStopped;
 protected:
 
 	UFUNCTION(Server, Reliable)
@@ -48,7 +54,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Actions")
 	TArray<TSubclassOf<UARAction> > DefaultActions;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(BlueprintReadOnly, Replicated)
 	TArray<UARAction*> Actions;
 	
 	virtual void BeginPlay() override;

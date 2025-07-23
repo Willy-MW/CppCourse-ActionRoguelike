@@ -4,6 +4,7 @@
 #include "ARActionEffect.h"
 
 #include "ARActionComponent.h"
+#include "GameFramework/GameStateBase.h"
 
 UARActionEffect::UARActionEffect()
 {
@@ -39,7 +40,7 @@ void UARActionEffect::StopAction_Implementation(AActor* Instigator)
 	{
 		ExecutePeriodicEffect(Instigator);
 	}
-	
+
 	Super::StopAction_Implementation(Instigator);
 
 	GetWorld()->GetTimerManager().ClearTimer(DurationHandle);
@@ -52,7 +53,19 @@ void UARActionEffect::StopAction_Implementation(AActor* Instigator)
 	}
 }
 
+float UARActionEffect::GetTimeRemaining() const
+{
+	AGameStateBase* GS = GetWorld()->GetGameState<AGameStateBase>();
+
+	if (GS)
+	{
+		float EndTime = TimeStarted + Duration;
+		return EndTime - GS->GetServerWorldTimeSeconds();
+	}
+
+	return Duration;
+}
+
 void UARActionEffect::ExecutePeriodicEffect_Implementation(AActor* Instigator)
 {
-	
 }

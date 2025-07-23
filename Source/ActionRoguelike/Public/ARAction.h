@@ -66,6 +66,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="Tag")
 	FGameplayTagContainer BlockedTags;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="UI")
+	UTexture2D* Icon;
+
+	UPROPERTY(Replicated)
+	float TimeStarted;
+	
 	UFUNCTION(BlueprintCallable, Category="Action")
 	UARActionComponent* GetOwningComponent() const;
 
