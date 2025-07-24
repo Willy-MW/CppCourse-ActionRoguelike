@@ -37,6 +37,11 @@ void AARPickUp::Interact_Implementation(APawn* InteractingPawn)
 	ApplyEffect(InteractingPawn);
 }
 
+FText AARPickUp::GetInteractText_Implementation(APawn* InstigatorPawn)
+{
+	return FText::GetEmpty();
+}
+
 void AARPickUp::OnRep_bIsEnabled()
 {
 	SetEnabled(bIsEnabled);

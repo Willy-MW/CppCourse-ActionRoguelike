@@ -4,7 +4,10 @@
 #include "ARHealthPotion.h"
 
 #include "ARAttributeComponent.h"
+#include "ARGameplayFunctionLibrary.h"
 #include "ARPlayerState.h"
+
+#define LOCTEXT_NAMESPACE "InteractableActors"
 
 AARHealthPotion::AARHealthPotion()
 {
@@ -12,6 +15,17 @@ AARHealthPotion::AARHealthPotion()
 
 	HealingAmount = 20.f;
 	CreditCost = 20;
+}
+
+FText AARHealthPotion::GetInteractText_Implementation(APawn* InstigatorPawn)
+{
+	UARAttributeComponent* AttributeComp = UARAttributeComponent::GetAttributes(InstigatorPawn);
+	if (AttributeComp && AttributeComp->IsFullHealth())
+	{
+		return LOCTEXT("HealthPotion_FullHealthWarning", "Already at full health.");
+	}
+
+	return FText::Format(LOCTEXT("HealthPotion_InteractMessage", "Cost {0} Credits. Restores health to maximum."), CreditCost);
 }
 
 void AARHealthPotion::ApplyEffect_Implementation(APawn* Pawn)
@@ -41,3 +55,4 @@ void AARHealthPotion::ApplyEffect_Implementation(APawn* Pawn)
 	}
 }
 
+#undef LOCTEXT_NAMESPACE

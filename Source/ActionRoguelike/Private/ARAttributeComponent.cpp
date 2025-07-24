@@ -146,6 +146,11 @@ bool UARAttributeComponent::IsAlive() const
 	return Health > 0.f;
 }
 
+bool UARAttributeComponent::IsFullHealth()
+{
+	return GetHealthPercent() == 1.f;
+}
+
 void UARAttributeComponent::MulticastRageChanged_Implementation(float NewHealth, float DeltaHealth)
 {
 	OnRageChanged.Broadcast(this, Rage, DeltaHealth);

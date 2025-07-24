@@ -21,6 +21,9 @@ public:
 	UPROPERTY(EditAnywhere, Category="PickUp")
 	int32 CreditCost;
 
+	FText GetInteractText_Implementation(APawn* InstigatorPawn) override;
+
 protected:
 	void ApplyEffect_Implementation(APawn* Pawn) override;
+	
 };

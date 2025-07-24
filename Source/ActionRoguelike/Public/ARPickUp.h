@@ -26,6 +26,8 @@ public:
 
 	void Interact_Implementation(APawn* InteractingPawn) override;
 
+	FText GetInteractText_Implementation(APawn* InstigatorPawn);
+
 protected:
 
 	UPROPERTY(ReplicatedUsing=OnRep_bIsEnabled)
