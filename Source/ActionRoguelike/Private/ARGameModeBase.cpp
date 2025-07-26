@@ -3,13 +3,18 @@
 
 #include "ARGameModeBase.h"
 
+#include "ARAction.h"
+#include "ARActionComponent.h"
 #include "ARAttributeComponent.h"
 #include "ARCharacter.h"
 #include "ARGameplayInterface.h"
+#include "ARMonsterData.h"
 #include "ARPlayerState.h"
 #include "ARSaveGame.h"
 #include "EngineUtils.h"
+#include "ActionRoguelike/ActionRoguelike.h"
 #include "AI/ARAICharacter.h"
+#include "Engine/AssetManager.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "GameFramework/GameStateBase.h"
 #include "Kismet/GameplayStatics.h"
@@ -38,7 +43,50 @@ void AARGameModeBase::OnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryIn
 
 	if (Locations.IsValidIndex(0))
 	{
-		GetWorld()->SpawnActor<AActor>(MinionClass, Locations[0], FRotator::ZeroRotator);
+		if (MonsterTable)
+		{
+			TArray<FMonsterInfoRow*> Rows;
+			MonsterTable->GetAllRows("", Rows);
+
+			int32 RandomIndex = FMath::RandRange(0, Rows.Num() - 1);
+			FMonsterInfoRow* SelectedRow = Rows[RandomIndex];
+
+			UAssetManager* Manager = UAssetManager::GetIfInitialized();
+			if (Manager)
+			{
+				LogOnScreen(this, "Loading monster...", FColor::Green);
+				
+				TArray<FName> Bundles;
+				FStreamableDelegate Delegate = FStreamableDelegate::CreateUObject(this, &AARGameModeBase::OnMonsterLoaded, SelectedRow->MonsterId, Locations[0]);
+				Manager->LoadPrimaryAsset(SelectedRow->MonsterId, Bundles, Delegate);
+			}
+		}
+	}
+}
+
+void AARGameModeBase::OnMonsterLoaded(FPrimaryAssetId PrimaryAssetId, FVector SpawnLocation)
+{
+	LogOnScreen(this, "Finished loading.", FColor::Green);
+	
+	UAssetManager* Manager = UAssetManager::GetIfInitialized();
+	if (Manager)
+	{
+		UARMonsterData* MonsterData = Cast<UARMonsterData>(Manager->GetPrimaryAssetObject(PrimaryAssetId));
+
+		AActor* NewBot = GetWorld()->SpawnActor<AActor>(MonsterData->MonsterClass, SpawnLocation, FRotator::ZeroRotator);
+		if (NewBot)
+		{
+			LogOnScreen(this, FString::Printf(TEXT("Spawned enemy: %s (%s)"), *GetNameSafe(NewBot), *GetNameSafe(MonsterData)));
+
+			UARActionComponent* ActionComp = NewBot->FindComponentByClass<UARActionComponent>();
+			if (ActionComp)
+			{
+				for (TSubclassOf<UARAction> ActionClass : MonsterData->Actions)
+				{
+					ActionComp->AddAction(NewBot, ActionClass);
+				}
+			}
+		}
 	}
 }
 

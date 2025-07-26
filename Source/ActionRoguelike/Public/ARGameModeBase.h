@@ -7,10 +7,36 @@
 #include "GameFramework/GameModeBase.h"
 #include "ARGameModeBase.generated.h"
 
+class UARMonsterData;
 class UARSaveGame;
-/**
- * 
- */
+
+USTRUCT(BlueprintType)
+struct FMonsterInfoRow : public FTableRowBase
+{
+	GENERATED_BODY()
+
+public:
+
+	FMonsterInfoRow()
+	{
+		Weight = 1.f;
+		SpawnCost = 5.f;
+		KillReward = 20.f;
+	}
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FPrimaryAssetId MonsterId;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float Weight;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float SpawnCost;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float KillReward;
+};
+
 UCLASS()
 class ACTIONROGUELIKE_API AARGameModeBase : public AGameModeBase
 {
@@ -38,6 +64,11 @@ protected:
 
 	UPROPERTY()
 	UARSaveGame* CurrentSaveGame;
+
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+	UDataTable* MonsterTable;
+
+	void OnMonsterLoaded(FPrimaryAssetId PrimaryAssetId, FVector SpawnLocation);
 	
 	UFUNCTION()
 	void OnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
