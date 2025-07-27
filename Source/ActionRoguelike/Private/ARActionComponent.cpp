@@ -8,6 +8,7 @@
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
 
+DECLARE_CYCLE_STAT(TEXT("StartActionByName"), STAT_StartActionByName, STATGROUP_ACTIONROGUE);
 
 UARActionComponent::UARActionComponent()
 {
@@ -55,6 +56,8 @@ void UARActionComponent::RemoveAction(UARAction* Action)
 
 bool UARActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 {
+	SCOPE_CYCLE_COUNTER(STAT_StartActionByName);
+	
 	for (UARAction* Action : Actions)
 	{
 		if (!(Action && Action->ActionName == ActionName))
@@ -71,6 +74,8 @@ bool UARActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 		{
 			ServerStartAction(Instigator, ActionName);
 		}
+
+		TRACE_BOOKMARK(TEXT("StartAction::%s"), *GetNameSafe(Action));
 
 		Action->StartAction(Instigator);
 		return true;
@@ -147,8 +152,22 @@ void UARActionComponent::BeginPlay()
 
 }
 
+void UARActionComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	TArray<UARAction*> ActionsCopy = Actions;
+	for (UARAction* Action : ActionsCopy)
+	{
+		if (Action && Action->IsRunning())
+		{
+			Action->StopAction(GetOwner());
+		}
+	}
+	
+	Super::EndPlay(EndPlayReason);
+}
+
 bool UARActionComponent::ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch,
-	FReplicationFlags* RepFlags)
+                                             FReplicationFlags* RepFlags)
 {
 	bool WroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
 	for (UARAction* Action : Actions)

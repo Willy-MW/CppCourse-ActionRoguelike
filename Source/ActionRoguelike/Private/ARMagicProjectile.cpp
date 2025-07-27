@@ -36,6 +36,8 @@ AARMagicProjectile::AARMagicProjectile()
 	Damage = 20.f;
 
 	SetReplicates(true);
+
+	InitialLifeSpan = 10.f;
 }
 
 void AARMagicProjectile::PostInitializeComponents()
