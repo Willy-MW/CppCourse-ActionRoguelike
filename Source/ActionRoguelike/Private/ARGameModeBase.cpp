@@ -20,7 +20,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 
-static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("ar.SpawnBots"), true, TEXT("Enable spawning of bots via timer"), ECVF_Cheat);
+static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("ar.SpawnBots"), true, TEXT("Enable spawning of bots via timer"),
+                                                ECVF_Cheat);
 
 AARGameModeBase::AARGameModeBase()
 {
@@ -55,9 +56,10 @@ void AARGameModeBase::OnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryIn
 			if (Manager)
 			{
 				LogOnScreen(this, "Loading monster...", FColor::Green);
-				
+
 				TArray<FName> Bundles;
-				FStreamableDelegate Delegate = FStreamableDelegate::CreateUObject(this, &AARGameModeBase::OnMonsterLoaded, SelectedRow->MonsterId, Locations[0]);
+				FStreamableDelegate Delegate = FStreamableDelegate::CreateUObject(
+					this, &AARGameModeBase::OnMonsterLoaded, SelectedRow->MonsterId, Locations[0]);
 				Manager->LoadPrimaryAsset(SelectedRow->MonsterId, Bundles, Delegate);
 			}
 		}
@@ -67,16 +69,18 @@ void AARGameModeBase::OnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryIn
 void AARGameModeBase::OnMonsterLoaded(FPrimaryAssetId PrimaryAssetId, FVector SpawnLocation)
 {
 	LogOnScreen(this, "Finished loading.", FColor::Green);
-	
+
 	UAssetManager* Manager = UAssetManager::GetIfInitialized();
 	if (Manager)
 	{
 		UARMonsterData* MonsterData = Cast<UARMonsterData>(Manager->GetPrimaryAssetObject(PrimaryAssetId));
 
-		AActor* NewBot = GetWorld()->SpawnActor<AActor>(MonsterData->MonsterClass, SpawnLocation, FRotator::ZeroRotator);
+		AActor* NewBot = GetWorld()->SpawnActor<
+			AActor>(MonsterData->MonsterClass, SpawnLocation, FRotator::ZeroRotator);
 		if (NewBot)
 		{
-			LogOnScreen(this, FString::Printf(TEXT("Spawned enemy: %s (%s)"), *GetNameSafe(NewBot), *GetNameSafe(MonsterData)));
+			LogOnScreen(
+				this, FString::Printf(TEXT("Spawned enemy: %s (%s)"), *GetNameSafe(NewBot), *GetNameSafe(MonsterData)));
 
 			UARActionComponent* ActionComp = NewBot->FindComponentByClass<UARActionComponent>();
 			if (ActionComp)
@@ -97,7 +101,7 @@ void AARGameModeBase::SpawnBotTimerElapsed()
 		UE_LOG(LogTemp, Warning, TEXT("Spawn bot disabled by CVarSpawnBots"));
 		return;
 	}
-	
+
 	int32 NrOfAliveBots = 0;
 
 	for (TActorIterator<AARAICharacter> It(GetWorld()); It; ++It)
@@ -122,7 +126,7 @@ void AARGameModeBase::SpawnBotTimerElapsed()
 	{
 		return;
 	}
-	
+
 	UEnvQueryInstanceBlueprintWrapper* QueryInstance = UEnvQueryManager::RunEQSQuery(
 		this, SpawnBotQuery, this, EEnvQueryRunMode::RandomBest5Pct, nullptr);
 	if (ensure(QueryInstance))
@@ -136,7 +140,7 @@ void AARGameModeBase::RespawnPlayerElapsed(AController* Controller)
 	if (ensure(Controller))
 	{
 		Controller->UnPossess();
-		
+
 		RestartPlayer(Controller);
 	}
 }
@@ -163,7 +167,7 @@ void AARGameModeBase::OnActorKilled(AActor* KilledActor, AActor* Killer)
 
 	if (Bot && Player)
 	{
-		AARPlayerState* PS = Cast<AARPlayerState>( Player->GetPlayerState());
+		AARPlayerState* PS = Cast<AARPlayerState>(Player->GetPlayerState());
 
 		if (!PS)
 		{
@@ -210,9 +214,9 @@ void AARGameModeBase::KillAllBots()
 
 void AARGameModeBase::WriteSaveGame()
 {
-	for (int32 i =0; i<GameState->PlayerArray.Num(); i++)
+	for (int32 i = 0; i < GameState->PlayerArray.Num(); i++)
 	{
-		AARPlayerState* PS = Cast<AARPlayerState>( GameState->PlayerArray[i] );
+		AARPlayerState* PS = Cast<AARPlayerState>(GameState->PlayerArray[i]);
 		if (PS)
 		{
 			PS->SavePlayerState(CurrentSaveGame);
@@ -239,12 +243,12 @@ void AARGameModeBase::WriteSaveGame()
 
 		FObjectAndNameAsStringProxyArchive Ar(MemWriter, true);
 		Ar.ArIsSaveGame = true;
-		
+
 		Actor->Serialize(Ar);
 
 		CurrentSaveGame->SavedActors.Add(ActorData);
 	}
-	
+
 	UGameplayStatics::SaveGameToSlot(CurrentSaveGame, SlotName, 0);
 }
 
@@ -252,7 +256,7 @@ void AARGameModeBase::LoadSaveGame()
 {
 	if (UGameplayStatics::DoesSaveGameExist(SlotName, 0))
 	{
-		CurrentSaveGame = Cast<UARSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName,0));
+		CurrentSaveGame = Cast<UARSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, 0));
 
 		if (CurrentSaveGame == nullptr)
 		{
@@ -281,11 +285,11 @@ void AARGameModeBase::LoadSaveGame()
 
 					FObjectAndNameAsStringProxyArchive Ar(MemReader, true);
 					Ar.ArIsSaveGame = true;
-		
+
 					Actor->Serialize(Ar);
 
 					IARGameplayInterface::Execute_OnActorLoaded(Actor);
-					
+
 					break;
 				}
 			}
@@ -301,7 +305,11 @@ void AARGameModeBase::InitGame(const FString& MapName, const FString& Options, F
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
 
+	FString SelectedSaveSlot = UGameplayStatics::ParseOption(Options, "SaveGame");
+	if (SelectedSaveSlot.Len() > 0)
+	{
+		SlotName = SelectedSaveSlot;
+	}
+	
 	LoadSaveGame();
 }
-
-
